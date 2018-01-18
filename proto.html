@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+    body {
+
+      background-color: #444;
+      color: #ffffff;
+    }
+    </style>
+  </head>
+  <body>
+
+
+<script>
+function Car(make, model, year) {
+  this.make = make;
+  this.model = model;
+  this.year = year;
+}
+function Chess() {
+  return {
+    board:[
+        [0,0,0,0,"K",0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,"r2"],
+        ["p",0,0,"Q",0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+    ],
+    user1: {
+      army: [
+        {
+          name: "pawn",
+          advanced: false,
+          direction: "-",
+          position: {x:0,y:6},
+          moves: [],
+        },
+        {
+          name: "pawn",
+          advanced: false,
+          direction: "-",
+          position: {x:0,y:1},
+          moves: [
+            {
+              // Calculate moves
+              coordinates: {y:-1, x:0}, // FACT - possible position
+              capture: false, // FACT - if object, is it yours? is it attackable
+
+              // Calculate other possibilites in secondary loop
+              in_danger: false, // FACT - check whole board for possible attack??
+              place_opponent_in_check: false, // FACT- How???? If can attack
+              protected: false, // FACT
+            }
+          ],
+        }
+      ]
+    },
+    place_piece: function() {
+      console.log("Print board")
+      var y = 0;
+      this.board.map((item) => {
+        var x = 0;
+        item.map( (i) => {
+          this.user1.army.map( (piece) => {
+            if (piece.position.x == x && piece.position.y == y) {
+              this.board[y][x] = piece
+            }
+          })
+          x++
+        })
+        console.log(item)
+        y++
+      })
+      // console.log(this.board)
+    },
+    print_board: function() {
+      this.board.map((row) => {
+        console.log(row)
+      })
+    },
+    calculate_moves: function() {
+      // y1, x0
+      // for each piece, calc possible moves
+      this.user1.army.map((item) => {
+        // calc moves for this piece
+        item.moves.push({"nothing": "yet"})
+      })
+    },
+    calculate_other_properties: function() {
+
+    },
+    reset_board: function() {
+      this.board = [
+        ["R1", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
+        ["P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
+        ["R2", "K2", "B2", "W2", "Q2", "B2", "K2", "R2"],
+      ]
+    },
+    build_pieces: function() {
+      let all = [];
+      let y = 0;
+      this.board.map((row) => {
+
+        let x = 0;
+        row.map((p) => {
+          let team_number = p.split("")[1]
+          let direction = "";
+          let name = "";
+          if (team_number == "1") {
+            direction = "+"
+          } else if (team_number == 2){
+            direction = "-"
+          }
+          if (p.match("P")) {
+            name = "pawn";
+          }
+          if (p.match("R")) {
+            name = "rook";
+          }
+          if (p.match("K")) {
+            name = "knight";
+          }
+          if (p.match("Q")) {
+            name = "queen";
+          }
+          if (p.match("W")) {
+            name = "king";
+          }
+          if (p.match("B")) {
+            name = "bishop";
+          }
+          all.push({
+            "user" : Number(team_number),
+            "direction" : direction,
+            "name" : name,
+            "position" : x + "|" + y,
+            // "position" : {x: x, y: y}
+            "advanced" : false,
+            "moves" : []
+          })
+          x++
+        })
+        y++
+      })
+      all.map((p) => {
+        if (p.user) {
+          console.log(p.name, p.moves)
+        }
+      })
+      // console.log(all)
+    }
+
+  }
+}
+
+var c = Chess();
+c.reset_board();
+c.print_board();
+c.build_pieces();
+c.calculate_moves();
+c.calculate_other_properties();
+
+</script>
+
+
+
+  </body>
+</html>
