@@ -22,16 +22,7 @@ function Car(make, model, year) {
 }
 function Chess() {
   return {
-    board:[
-        [0,0,0,0,"K",0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,"r2"],
-        ["p",0,0,"Q",0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-    ],
+    pieces: [],
     user1: {
       army: [
         {
@@ -97,10 +88,10 @@ function Chess() {
     },
     reset_board: function() {
       this.board = [
-        ["R1", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
-        ["P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
+        ["00", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
+        ["00", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["P1", "00", "00", "R1", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
@@ -141,11 +132,10 @@ function Chess() {
             name = "bishop";
           }
           all.push({
-            "user" : Number(team_number),
+            "player" : Number(team_number),
             "direction" : direction,
             "name" : name,
-            "position" : x + "|" + y,
-            // "position" : {x: x, y: y}
+            "coor" : {x: x, y: y},
             "advanced" : false,
             "moves" : []
           })
@@ -153,12 +143,194 @@ function Chess() {
         })
         y++
       })
-      all.map((p) => {
-        if (p.user) {
-          console.log(p.name, p.moves)
+      // console.log(all)
+      // all[50].moves = this.pawn(all[50])
+      all.map((piece) => {
+        if (piece.name == "pawn") {
+          piece.moves = this.pawn(piece)
+        }
+        if (piece.name == "rook") {
+          piece.moves = this.rook(piece)
         }
       })
-      // console.log(all)
+      this.pieces = all;
+    },
+    // write logic for possible moves for rook
+    rook: function(rook) {
+      let moves = []
+      let moveY;
+      let moveX;
+      let attack;
+
+      // if (rook.coor.y != 3) {
+      //   return []
+      // }
+
+      // Down
+      moveY = rook.coor.y + 1;
+      moveX = rook.coor.x;
+      while (this.isCoordinateValid(moveY, moveX)) {
+        if (this.isOpponent(moveY, moveX, rook.player)) {
+          // en capsule this in brackets
+          // push attack move to moves list
+          let attack = this.board[moveY][moveX]
+          this.board[moveY][moveX] = "{" + attack + "}"
+          break;
+        } else if (this.openSpace(moveY, moveX)){
+          // push regular move
+          this.board[moveY][moveX] = "{p}"
+        }
+        moveY++;
+      }
+
+      // Up
+      moveY = rook.coor.y - 1;
+      moveX = rook.coor.x;
+      while (this.isCoordinateValid(moveY, moveX)) {
+        if (this.isOpponent(moveY, moveX, rook.player)) {
+          let attack = this.board[moveY][moveX]
+          this.board[moveY][moveX] = "{" + attack + "}"
+          break;
+        } else if (this.openSpace(moveY, moveX)){
+          this.board[moveY][moveX] = "{p}"
+        }
+        moveY--;
+      }
+
+      // Right
+      moveY = rook.coor.y;
+      moveX = rook.coor.x + 1;
+      while (this.isCoordinateValid(moveY, moveX)) {
+        if (this.isOpponent(moveY, moveX, rook.player)) {
+          let attack = this.board[moveY][moveX]
+          this.board[moveY][moveX] = "{" + attack + "}"
+          break
+        } else if (this.openSpace(moveY, moveX)){
+          this.board[moveY][moveX] = "{p}"
+        }
+        moveX++;
+      }
+
+      // Left
+      moveY = rook.coor.y;
+      moveX = rook.coor.x - 1;
+      while (this.isCoordinateValid(moveY, moveX)) {
+        if (this.isOpponent(moveY, moveX, rook.player)) {
+          let attack = this.board[moveY][moveX]
+          this.board[moveY][moveX] = "{" + attack + "}"
+          break;
+        } else if (this.openSpace(moveY, moveX)){
+          this.board[moveY][moveX] = "{p}"
+        }
+        moveX--;
+      }
+
+      return moves
+    },
+    pawn: function(pawn) {
+      let moves = [];
+      let moveY;
+      let moveX;
+      let canMoveTwoPlaces = true;
+
+      moveY = pawn.coor.y + parseInt(pawn.direction + 1);
+      moveX = pawn.coor.x;
+      if (this.openSpace(moveY, moveX)) {
+        moves.push({
+          coordinates: {x: moveX, y: moveY},
+          capture: false
+        })
+      } else {
+        canMoveTwoPlaces = false;
+      }
+
+      // IGNORE INITAL DOUBLE SPACE MOVE
+      // if (!pawn.advanced && canMoveTwoPlaces) {
+      //   moveY = pawn.coor.y + parseInt(pawn.direction + 2);
+      //   moveX = pawn.coor.x;
+      //   if (this.openSpace(moveY, moveX)) {
+      //     moves.push({
+      //       coordinates: {x: moveX, y: moveY},
+      //       capture: false
+      //     })
+      //   }
+      // }
+
+      // diag right
+      moveY = pawn.coor.y + parseInt(pawn.direction + 1);
+      moveX = pawn.coor.x + 1;
+      if (this.isOpponent(moveY, moveX, pawn.player)) {
+        moves.push({
+          coordinates: {x: moveX, y: moveY},
+          capture: true
+        })
+      }
+
+      // diag left
+      moveY = pawn.coor.y + parseInt(pawn.direction + 1);
+      moveX = pawn.coor.x - 1;
+      if (this.isOpponent(moveY, moveX, pawn.player)) {
+        moves.push({
+          coordinates: {x: moveX, y: moveY},
+          capture: true
+        })
+      }
+
+      return moves
+    },
+    reachedOpponent: function(y, x, player) {
+      if (!this.isCoordinateValid(y,x)) {
+        return false;
+      }
+      if (!this.board[y][x].match(player)) {
+        return false;
+      }
+      return false;
+    },
+    isCoordinateValid: function(y, x) {
+      if (this.board[y] && this.board[y][x]) {
+        return true;
+      }
+      return false;
+    },
+    openSpace: function(y, x) {
+      if (!this.isCoordinateValid(y,x)) {
+        return false;
+      }
+      if (this.board[y][x] != "00") {
+        return false;
+      }
+      return true;
+    },
+    isOpponent: function(y, x, player) {
+      if (!this.isCoordinateValid(y,x)) {
+        return false;
+      }
+      if (this.board[y][x].match(player)) {
+        return false;
+      }
+      if (this.board[y][x].match("00")) {
+        return false;
+      }
+      return true;
+    },
+    print_moves: function(y, x) {
+      let boardClone = JSON.stringify(this.board);
+      boardClone = JSON.parse(boardClone)
+      this.pieces.map((piece) => {
+        if (piece.coor.y == y && piece.coor.x == x) {
+          console.log(piece)
+          if (!piece.moves) {
+            return false;
+          }
+          piece.moves.map((move) => {
+            boardClone[move.coordinates.y][move.coordinates.x] = "{p}"
+          })
+          boardClone.map((row) => {
+            console.log(row)
+          })
+        }
+      })
     }
 
   }
@@ -166,11 +338,13 @@ function Chess() {
 
 var c = Chess();
 c.reset_board();
-c.print_board();
 c.build_pieces();
 c.calculate_moves();
 c.calculate_other_properties();
 
+// c.print_board();
+console.log("------------------------")
+c.print_moves(3,3);
 </script>
 
 
