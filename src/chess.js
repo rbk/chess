@@ -16,23 +16,18 @@ function Chess()
     // place_opponent_in_check: false, // FACT- How???? If can attack
     // protected: false, // FACT
     print_board: function() {
+      console.clear();
       this.board.map((row) => {
         console.log(row)
       })
     },
     calculate_moves: function() {},
     calculate_other_properties: function() {},
-    reset_board: function() {
-      this.board = [
-        ["00", "K1", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["P1", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["P2", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-      ]
+    reset_board: function(board) {
+      this.board = this.startingBoard;
+    },
+    set_board: function(board) {
+      this.board = board;
     },
     build_pieces: function() {
       let all = [];
@@ -348,6 +343,7 @@ function Chess()
       return true;
     },
     print_moves: function(y, x) {
+      console.clear();
       let boardClone = JSON.stringify(this.board);
       boardClone = JSON.parse(boardClone)
       this.pieces.map((piece) => {
@@ -363,12 +359,21 @@ function Chess()
               boardClone[move.coordinates.y][move.coordinates.x] = "{m}"
             }
           })
-          boardClone.map((row) => {
-            console.log(row)
-          })
         }
       })
+      boardClone.map((row) => {
+        console.log(row)
+      })
+    },
+    remove_piece: function(y,x) {
+      let newArray = this.pieces.filter((piece) => {
+        if (piece.coor.y == y && piece.coor.x == x) {
+          this.board[piece.coor.y][piece.coor.x] = "00"
+        } else {
+          return piece;
+        }
+      })
+      this.pieces = newArray;
     }
-
   }
 }
