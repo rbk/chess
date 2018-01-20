@@ -14,7 +14,6 @@ function ChessUi()
   function getIcon(key) {
     let newKey = key
     armyMap.forEach((obj) => {
-      console.log(obj)
       if (key.match(obj.key)) {
         newKey = obj.display;
       }
@@ -39,7 +38,6 @@ function ChessUi()
   }
 
   function buildTable(board, pieces) {
-    console.log(armyMap)
     let html = "<table>";
     board.map((row,rowIndex) => {
       html += "<tr>";

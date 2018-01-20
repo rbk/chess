@@ -17,7 +17,6 @@ game.build_pieces();
 game.log_board();
 // game.log_moves(1,0);
 
-// game.onMove(function(){
-//   ui.displayBoard(game.board, game.pieces);
-// })
+ui.displayBoard(game.board, game.pieces);
+game.move({y: 6, x: 0}, {y: 6, x:1});
 ui.displayBoard(game.board, game.pieces);

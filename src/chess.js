@@ -66,7 +66,8 @@ function Chess()
               "direction" : direction,
               "coor" : {x: x, y: y},
               "advanced" : false,
-              "moves" : []
+              "moves" : [],
+              "key": p
             })
           }
           x++
@@ -374,6 +375,20 @@ function Chess()
         }
       })
       this.pieces = newArray;
+    },
+    move: function(from, to) {
+      let pieceExists = this.pieces.filter((obj) => {
+        if (obj.coor.x == from.x && obj.coor.y == from.y) {
+          return obj;
+        }
+        return false;
+      })
+      if (pieceExists.length > 0) {
+        console.log(pieceExists[0].moves)
+      }
+      // validate move
+      // update this.board with piece key
+      // update from coor to be empty
     }
   }
 }
