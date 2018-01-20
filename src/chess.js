@@ -364,7 +364,7 @@ function Chess()
         }
       })
       boardClone.map((row) => {
-        console.log(row)
+        // console.log(row)
       })
     },
     remove_piece: function(y,x) {

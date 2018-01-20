@@ -52,7 +52,7 @@ function ChessUi()
   }
 
   function buildTable(board, pieces) {
-    console.log(board)
+    // console.log(board)
     let html = "<table>";
     board.map((row,rowIndex) => {
       html += "<tr>";

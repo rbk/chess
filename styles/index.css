@@ -1,6 +1,7 @@
 body {
   background-color: #444;
   color: #ffffff;
+  font-family: sans-serif;
 }
 
 table {
@@ -9,11 +10,14 @@ table {
   box-shadow: 0px 0px 120px 0px #000;
 }
 
-td {
-  color: #fff;
-  height: 40px;
-  width: 40px;
+td, .board-tile {
+  height: 60px;
+  width: 60px;
   text-align: center;
+  vertical-align: center;
+}
+.board-tile {
+  /* height: auto; */
 }
 
 tr:nth-child(even) td:nth-child(even) {
