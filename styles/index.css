@@ -2,3 +2,38 @@ body {
   background-color: #444;
   color: #ffffff;
 }
+
+table {
+  margin: 3em auto;
+  border-collapse: collapse;
+}
+
+td {
+  color: #fff;
+  height: 40px;
+  width: 40px;
+  text-align: center;
+}
+
+tr:nth-child(even) td:nth-child(even) {
+  background-color: #bdbdbd;
+}
+tr:nth-child(odd) td:nth-child(odd) {
+  background-color: #bdbdbd;
+}
+
+tr:nth-child(odd) td:nth-child(even) {
+  background-color: #868686;
+}
+tr:nth-child(even) td:nth-child(odd) {
+  background-color: #868686;
+}
+
+
+.color-black {
+  color: #000;
+}
+
+.color-white {
+  color: #FFF;
+}

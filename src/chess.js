@@ -15,7 +15,7 @@ function Chess()
     // in_danger: false, // FACT - check whole board for possible attack??
     // place_opponent_in_check: false, // FACT- How???? If can attack
     // protected: false, // FACT
-    print_board: function() {
+    log_board: function() {
       console.clear();
       this.board.map((row) => {
         console.log(row)
@@ -342,7 +342,7 @@ function Chess()
       }
       return true;
     },
-    print_moves: function(y, x) {
+    log_moves: function(y, x) {
       console.clear();
       let boardClone = JSON.stringify(this.board);
       boardClone = JSON.parse(boardClone)

@@ -14,5 +14,10 @@ game.set_board([
 ]);
 game.reset_board();
 game.build_pieces();
-game.print_board();
-// game.print_moves(1,0);
+game.log_board();
+// game.log_moves(1,0);
+
+// game.onMove(function(){
+//   ui.displayBoard(game.board, game.pieces);
+// })
+ui.displayBoard(game.board, game.pieces);
