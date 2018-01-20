@@ -12,46 +12,10 @@
     </style>
   </head>
   <body>
-
-
 <script>
-function Car(make, model, year) {
-  this.make = make;
-  this.model = model;
-  this.year = year;
-}
 function Chess() {
   return {
     pieces: [],
-    user1: {
-      army: [
-        {
-          name: "pawn",
-          advanced: false,
-          direction: "-",
-          position: {x:0,y:6},
-          moves: [],
-        },
-        {
-          name: "pawn",
-          advanced: false,
-          direction: "-",
-          position: {x:0,y:1},
-          moves: [
-            {
-              // Calculate moves
-              coordinates: {y:-1, x:0}, // FACT - possible position
-              capture: false, // FACT - if object, is it yours? is it attackable
-
-              // Calculate other possibilites in secondary loop
-              in_danger: false, // FACT - check whole board for possible attack??
-              place_opponent_in_check: false, // FACT- How???? If can attack
-              protected: false, // FACT
-            }
-          ],
-        }
-      ]
-    },
     startingBoard: [
       ["R1", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
       ["P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
@@ -62,46 +26,24 @@ function Chess() {
       ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
       ["R2", "K2", "B2", "W2", "Q2", "B2", "K2", "R2"],
     ],
-    place_piece: function() {
-      console.log("Print board")
-      var y = 0;
-      this.board.map((item) => {
-        var x = 0;
-        item.map( (i) => {
-          this.user1.army.map( (piece) => {
-            if (piece.position.x == x && piece.position.y == y) {
-              this.board[y][x] = piece
-            }
-          })
-          x++
-        })
-        console.log(item)
-        y++
-      })
-      // console.log(this.board)
-    },
+    // in_danger: false, // FACT - check whole board for possible attack??
+    // place_opponent_in_check: false, // FACT- How???? If can attack
+    // protected: false, // FACT
     print_board: function() {
       this.board.map((row) => {
         console.log(row)
       })
     },
-    calculate_moves: function() {
-      // y1, x0
-      // for each piece, calc possible moves
-      this.user1.army.map((item) => {
-        // calc moves for this piece
-        item.moves.push({"nothing": "yet"})
-      })
-    },
+    calculate_moves: function() {},
     calculate_other_properties: function() {},
     reset_board: function() {
       this.board = [
+        ["00", "K1", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["P1", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "K1", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["P2", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
       ]
@@ -136,14 +78,16 @@ function Chess() {
           if (p.match("B")) {
             name = "bishop";
           }
-          all.push({
-            "player" : Number(team_number),
-            "direction" : direction,
-            "name" : name,
-            "coor" : {x: x, y: y},
-            "advanced" : false,
-            "moves" : []
-          })
+          if (name != "") {
+            all.push({
+              "name" : name,
+              "player" : Number(team_number),
+              "direction" : direction,
+              "coor" : {x: x, y: y},
+              "advanced" : false,
+              "moves" : []
+            })
+          }
           x++
         })
         y++
@@ -288,8 +232,6 @@ function Chess() {
         moveY = piece.coor.y + parseInt(dir.y);
         moveX = piece.coor.x + parseInt(dir.x);
 
-        console.log([moveY, moveX])
-
         if (this.isOpponent(moveY, moveX, piece.player)) {
           let attack = this.board[moveY][moveX]
           moves.push({
@@ -338,21 +280,27 @@ function Chess() {
           coordinates: {x: moveX, y: moveY},
           capture: false
         })
-      } else {
+      }
+
+      if (pawn.direction == "+" && pawn.coor.y > 1)  {
+        canMoveTwoPlaces = false;
+      }
+
+      if (pawn.direction == "-" && pawn.coor.y <= 5)  {
         canMoveTwoPlaces = false;
       }
 
       // IGNORE INITAL DOUBLE SPACE MOVE
-      // if (!pawn.advanced && canMoveTwoPlaces) {
-      //   moveY = pawn.coor.y + parseInt(pawn.direction + 2);
-      //   moveX = pawn.coor.x;
-      //   if (this.openSpace(moveY, moveX)) {
-      //     moves.push({
-      //       coordinates: {x: moveX, y: moveY},
-      //       capture: false
-      //     })
-      //   }
-      // }
+      if (canMoveTwoPlaces) {
+        moveY = pawn.coor.y + parseInt(pawn.direction + 2);
+        moveX = pawn.coor.x;
+        if (this.openSpace(moveY, moveX)) {
+          moves.push({
+            coordinates: {x: moveX, y: moveY},
+            capture: false
+          })
+        }
+      }
 
       // diag right
       moveY = pawn.coor.y + parseInt(pawn.direction + 1);
@@ -418,7 +366,6 @@ function Chess() {
       boardClone = JSON.parse(boardClone)
       this.pieces.map((piece) => {
         if (piece.coor.y == y && piece.coor.x == x) {
-          console.log(piece)
           if (!piece.moves) {
             return false;
           }
@@ -443,12 +390,14 @@ function Chess() {
 var c = Chess();
 c.reset_board();
 c.build_pieces();
-c.calculate_moves();
-c.calculate_other_properties();
 
+// console.log("---Print Board------------------------")
 // c.print_board();
-console.log("------------------------")
-c.print_moves(3,3);
+
+console.log("---Print board with moves of one piece------------------------")
+// c.print_moves(0,1);
+c.print_moves(2,0);
+console.log(c.pieces)
 // c.print_moves(7,0);
 
 
