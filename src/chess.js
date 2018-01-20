@@ -121,13 +121,13 @@ function Chess()
           if (this.isOpponent(moveY, moveX, piece.player)) {
             let attack = this.board[moveY][moveX]
             moves.push({
-              coordinates: {x: moveX, y: moveY},
+              coor: {x: moveX, y: moveY},
               capture: true
             })
             break;
           } else if (this.openSpace(moveY, moveX)){
             moves.push({
-              coordinates: {x: moveX, y: moveY},
+              coor: {x: moveX, y: moveY},
               capture: false
             })
           } else {
@@ -172,13 +172,13 @@ function Chess()
           if (this.isOpponent(moveY, moveX, piece.player)) {
             let attack = this.board[moveY][moveX]
             moves.push({
-              coordinates: {x: moveX, y: moveY},
+              coor: {x: moveX, y: moveY},
               capture: true
             })
             break;
           } else if (this.openSpace(moveY, moveX)){
             moves.push({
-              coordinates: {x: moveX, y: moveY},
+              coor: {x: moveX, y: moveY},
               capture: false
             })
           } else {
@@ -217,12 +217,12 @@ function Chess()
         if (this.isOpponent(moveY, moveX, piece.player)) {
           let attack = this.board[moveY][moveX]
           moves.push({
-            coordinates: {x: moveX, y: moveY},
+            coor: {x: moveX, y: moveY},
             capture: true
           })
         } else if (this.openSpace(moveY, moveX)){
           moves.push({
-            coordinates: {x: moveX, y: moveY},
+            coor: {x: moveX, y: moveY},
             capture: false
           })
         }
@@ -259,7 +259,7 @@ function Chess()
       moveX = pawn.coor.x;
       if (this.openSpace(moveY, moveX)) {
         moves.push({
-          coordinates: {x: moveX, y: moveY},
+          coor: {x: moveX, y: moveY},
           capture: false
         })
       }
@@ -278,7 +278,7 @@ function Chess()
         moveX = pawn.coor.x;
         if (this.openSpace(moveY, moveX)) {
           moves.push({
-            coordinates: {x: moveX, y: moveY},
+            coor: {x: moveX, y: moveY},
             capture: false
           })
         }
@@ -289,7 +289,7 @@ function Chess()
       moveX = pawn.coor.x + 1;
       if (this.isOpponent(moveY, moveX, pawn.player)) {
         moves.push({
-          coordinates: {x: moveX, y: moveY},
+          coor: {x: moveX, y: moveY},
           capture: true
         })
       }
@@ -299,7 +299,7 @@ function Chess()
       moveX = pawn.coor.x - 1;
       if (this.isOpponent(moveY, moveX, pawn.player)) {
         moves.push({
-          coordinates: {x: moveX, y: moveY},
+          coor: {x: moveX, y: moveY},
           capture: true
         })
       }
@@ -354,10 +354,10 @@ function Chess()
           }
           piece.moves.map((move) => {
             if (move.capture) {
-              let attack = boardClone[move.coordinates.y][move.coordinates.x]
-              boardClone[move.coordinates.y][move.coordinates.x] = "{"+attack+"}"
+              let attack = boardClone[move.coor.y][move.coor.x]
+              boardClone[move.coor.y][move.coor.x] = "{"+attack+"}"
             } else {
-              boardClone[move.coordinates.y][move.coordinates.x] = "{m}"
+              boardClone[move.coor.y][move.coor.x] = "{m}"
             }
           })
         }
@@ -384,11 +384,18 @@ function Chess()
         return false;
       })
       if (pieceExists.length > 0) {
-        console.log(pieceExists[0].moves)
+        let piece = pieceExists[0];
+        let moves = piece.moves;
+        // validate move
+        moves.forEach((obj) => {
+          if (obj.coor.x == to.x && obj.coor.y == to.y) {
+            // update this.board with piece key
+            this.board[to.y][to.x] = piece.key;
+            // update from coor to be empty
+            this.board[from.y][from.x] = "00";
+          }
+        })
       }
-      // validate move
-      // update this.board with piece key
-      // update from coor to be empty
     }
   }
 }
