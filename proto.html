@@ -99,9 +99,9 @@ function Chess() {
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "B1", "00", "00", "00", "00"],
+        ["00", "00", "00", "K1", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "00", "00", "P2", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
       ]
@@ -158,6 +158,15 @@ function Chess() {
         if (piece.name == "bishop") {
           piece.moves = this.bishop(piece)
         }
+        if (piece.name == "knight") {
+          piece.moves = this.knight(piece)
+        }
+        if (piece.name == "queen") {
+          piece.moves = this.queen(piece)
+        }
+        if (piece.name == "king") {
+          piece.moves = this.king(piece)
+        }
       })
       this.pieces = all;
     },
@@ -176,6 +185,8 @@ function Chess() {
       ]
 
       directions.map((dir) => {
+
+        moveCount = 0;
 
         moveY = piece.coor.y + parseInt(dir.y + 1);
         moveX = piece.coor.x + parseInt(dir.x + 1);
@@ -207,8 +218,6 @@ function Chess() {
     },
     allLinear: function(piece, limit) {
 
-      console.log(Boolean(limit))
-
       let moves = [];
       let moveY;
       let moveX;
@@ -223,6 +232,8 @@ function Chess() {
 
       directions.map((dir) => {
 
+        moveCount = 0;
+
         if (dir.y == null) {
           moveY = piece.coor.y;
           moveX = piece.coor.x + parseInt(dir.x + 1);
@@ -234,7 +245,6 @@ function Chess() {
         while (this.isCoordinateValid(moveY, moveX) && moveCount < limit) {
           if (this.isOpponent(moveY, moveX, piece.player)) {
             let attack = this.board[moveY][moveX]
-            this.board[moveY][moveX] = "{" + attack + "}"
             moves.push({
               coordinates: {x: moveX, y: moveY},
               capture: true
@@ -260,10 +270,45 @@ function Chess() {
       return moves;
 
     },
+    knight: function(piece) {
+      let moves = [];
+      let moveY;
+      let moveX;
+      let directions = [
+        {x: "+1", y: "+2"},
+        {x: "-1", y: "-2"},
+        {x: "+1", y: "-2"},
+        {x: "-1", y: "+2"},
+        {x: "+2", y: "+1"},
+        {x: "-2", y: "-1"},
+        {x: "+2", y: "-1"},
+        {x: "-2", y: "+1"},
+      ];
+      directions.map((dir) => {
+        moveY = piece.coor.y + parseInt(dir.y);
+        moveX = piece.coor.x + parseInt(dir.x);
+
+        console.log([moveY, moveX])
+
+        if (this.isOpponent(moveY, moveX, piece.player)) {
+          let attack = this.board[moveY][moveX]
+          moves.push({
+            coordinates: {x: moveX, y: moveY},
+            capture: true
+          })
+        } else if (this.openSpace(moveY, moveX)){
+          moves.push({
+            coordinates: {x: moveX, y: moveY},
+            capture: false
+          })
+        }
+      })
+      return moves;
+    },
     king: function(king) {
       let moves;
-      let linearMoves = this.allLinear(king, 4);
-      let diagonalMoves = this.allDiagonal(king, 4);
+      let linearMoves = this.allLinear(king, 1);
+      let diagonalMoves = this.allDiagonal(king, 1);
       moves = linearMoves.concat(diagonalMoves);
       return moves;
     },
@@ -330,6 +375,7 @@ function Chess() {
       }
 
       return moves
+
     },
     reachedOpponent: function(y, x, player) {
       if (!this.isCoordinateValid(y,x)) {
@@ -400,7 +446,7 @@ c.build_pieces();
 c.calculate_moves();
 c.calculate_other_properties();
 
-c.print_board();
+// c.print_board();
 console.log("------------------------")
 c.print_moves(3,3);
 // c.print_moves(7,0);
