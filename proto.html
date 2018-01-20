@@ -52,6 +52,16 @@ function Chess() {
         }
       ]
     },
+    startingBoard: [
+      ["R1", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
+      ["P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
+      ["00", "00", "00", "00", "00", "00", "00", "00"],
+      ["00", "00", "00", "00", "00", "00", "00", "00"],
+      ["00", "00", "00", "00", "00", "00", "00", "00"],
+      ["00", "00", "00", "00", "00", "00", "00", "00"],
+      ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
+      ["R2", "K2", "B2", "W2", "Q2", "B2", "K2", "R2"],
+    ],
     place_piece: function() {
       console.log("Print board")
       var y = 0;
@@ -83,28 +93,23 @@ function Chess() {
         item.moves.push({"nothing": "yet"})
       })
     },
-    calculate_other_properties: function() {
-
-    },
+    calculate_other_properties: function() {},
     reset_board: function() {
       this.board = [
-        ["00", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
-        ["00", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
-        ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["P1", "00", "00", "R1", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
-        ["R2", "K2", "B2", "W2", "Q2", "B2", "K2", "R2"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "R1", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "P2", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
+        ["00", "00", "00", "00", "00", "00", "00", "00"],
       ]
     },
     build_pieces: function() {
       let all = [];
-      let y = 0;
-      this.board.map((row) => {
-
-        let x = 0;
-        row.map((p) => {
+      this.board.map((row, y) => {
+        row.map((p, x) => {
           let team_number = p.split("")[1]
           let direction = "";
           let name = "";
@@ -143,8 +148,6 @@ function Chess() {
         })
         y++
       })
-      // console.log(all)
-      // all[50].moves = this.pawn(all[50])
       all.map((piece) => {
         if (piece.name == "pawn") {
           piece.moves = this.pawn(piece)
@@ -152,80 +155,110 @@ function Chess() {
         if (piece.name == "rook") {
           piece.moves = this.rook(piece)
         }
+        if (piece.name == "bishop") {
+          piece.moves = this.bishop(piece)
+        }
       })
       this.pieces = all;
     },
-    // write logic for possible moves for rook
-    rook: function(rook) {
-      let moves = []
+    findMoves: function(type, limit, piece) {
+
+    },
+    allDiagonal: function(piece, limit) {
+
+      let moves = [];
       let moveY;
       let moveX;
-      let attack;
 
-      // if (rook.coor.y != 3) {
-      //   return []
-      // }
+      let directions = [
+        {x: "+", y: "+"},
+        {x: "-", y: "-"},
+        {x: "-", y: "+"},
+        {x: "+", y: "-"},
+      ]
 
-      // Down
-      moveY = rook.coor.y + 1;
-      moveX = rook.coor.x;
-      while (this.isCoordinateValid(moveY, moveX)) {
-        if (this.isOpponent(moveY, moveX, rook.player)) {
-          // en capsule this in brackets
-          // push attack move to moves list
-          let attack = this.board[moveY][moveX]
-          this.board[moveY][moveX] = "{" + attack + "}"
-          break;
-        } else if (this.openSpace(moveY, moveX)){
-          // push regular move
-          this.board[moveY][moveX] = "{p}"
+      directions.map((dir) => {
+
+        moveY = piece.coor.y + parseInt(dir.y + 1);
+        moveX = piece.coor.x + parseInt(dir.x + 1);
+
+        while (this.isCoordinateValid(moveY, moveX)) {
+          if (this.isOpponent(moveY, moveX, piece.player)) {
+            let attack = this.board[moveY][moveX]
+            this.board[moveY][moveX] = "{" + attack + "}"
+            break;
+          } else if (this.openSpace(moveY, moveX)){
+            this.board[moveY][moveX] = "{p}"
+          } else {
+            break;
+          }
+          moveY = moveY + parseInt(dir.y + 1);
+          moveX = moveX + parseInt(dir.x + 1);
         }
-        moveY++;
-      }
-
-      // Up
-      moveY = rook.coor.y - 1;
-      moveX = rook.coor.x;
-      while (this.isCoordinateValid(moveY, moveX)) {
-        if (this.isOpponent(moveY, moveX, rook.player)) {
-          let attack = this.board[moveY][moveX]
-          this.board[moveY][moveX] = "{" + attack + "}"
-          break;
-        } else if (this.openSpace(moveY, moveX)){
-          this.board[moveY][moveX] = "{p}"
-        }
-        moveY--;
-      }
-
-      // Right
-      moveY = rook.coor.y;
-      moveX = rook.coor.x + 1;
-      while (this.isCoordinateValid(moveY, moveX)) {
-        if (this.isOpponent(moveY, moveX, rook.player)) {
-          let attack = this.board[moveY][moveX]
-          this.board[moveY][moveX] = "{" + attack + "}"
-          break
-        } else if (this.openSpace(moveY, moveX)){
-          this.board[moveY][moveX] = "{p}"
-        }
-        moveX++;
-      }
-
-      // Left
-      moveY = rook.coor.y;
-      moveX = rook.coor.x - 1;
-      while (this.isCoordinateValid(moveY, moveX)) {
-        if (this.isOpponent(moveY, moveX, rook.player)) {
-          let attack = this.board[moveY][moveX]
-          this.board[moveY][moveX] = "{" + attack + "}"
-          break;
-        } else if (this.openSpace(moveY, moveX)){
-          this.board[moveY][moveX] = "{p}"
-        }
-        moveX--;
-      }
+      })
 
       return moves
+
+    },
+    allLinear: function(piece, limit) {
+
+      console.log(Boolean(limit))
+
+      let moves = [];
+      let moveY;
+      let moveX;
+
+      let directions = [
+        {x: null, y: "+"},
+        {x: null, y: "-"},
+        {x: "-", y: null},
+        {x: "+", y: null},
+      ]
+
+      directions.map((dir) => {
+
+        if (dir.y == null) {
+          moveY = piece.coor.y;
+          moveX = piece.coor.x + parseInt(dir.x + 1);
+        } else {
+          moveY = piece.coor.y + parseInt(dir.y + 1);
+          moveX = piece.coor.x;
+        }
+
+        while (this.isCoordinateValid(moveY, moveX)) {
+          if (this.isOpponent(moveY, moveX, piece.player)) {
+            let attack = this.board[moveY][moveX]
+            this.board[moveY][moveX] = "{" + attack + "}"
+            break;
+          } else if (this.openSpace(moveY, moveX)){
+            this.board[moveY][moveX] = "{p}"
+          } else {
+            break;
+          }
+          if (dir.y == null) {
+            moveX = moveX + parseInt(dir.x + 1);
+          } else {
+            moveY = moveY + parseInt(dir.y + 1);
+          }
+        }
+      })
+
+      return moves;
+
+    },
+    rook: function(rook) {
+      return this.allLinear(rook, 0)
+    },
+    bishop: function(bishop) {
+      return this.allDiagonal(bishop)
+
+      // type(s), limit
+      this.findMoves("diagonal", 0) // bishop
+      this.findMoves("linear", 0) // rook
+      this.findMoves(["diagonal", "linear"], 1) // king
+      this.findMoves(["diagonal", "linear"], 0) // queen
+      this.findMoves("knight", 0) // knight
+      this.findMoves("pawn", 1) // pawn
     },
     pawn: function(pawn) {
       let moves = [];
@@ -324,7 +357,12 @@ function Chess() {
             return false;
           }
           piece.moves.map((move) => {
-            boardClone[move.coordinates.y][move.coordinates.x] = "{p}"
+            if (move.capture) {
+              let attack = boardClone[move.coordinates.y][move.coordinates.x]
+              boardClone[move.coordinates.y][move.coordinates.x] = "{"+attack+"}"
+            } else {
+              boardClone[move.coordinates.y][move.coordinates.x] = "{m}"
+            }
           })
           boardClone.map((row) => {
             console.log(row)
@@ -342,9 +380,12 @@ c.build_pieces();
 c.calculate_moves();
 c.calculate_other_properties();
 
-// c.print_board();
+c.print_board();
 console.log("------------------------")
-c.print_moves(3,3);
+// c.print_moves(3,3);
+// c.print_moves(7,0);
+
+
 </script>
 
 
