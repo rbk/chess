@@ -23,8 +23,9 @@ function Chess()
     },
     calculate_moves: function() {},
     calculate_other_properties: function() {},
-    reset_board: function(board) {
+    reset_board: function() {
       this.board = this.startingBoard;
+      this.build_pieces();
     },
     set_board: function(board) {
       this.board = board;

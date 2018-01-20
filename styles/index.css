@@ -6,6 +6,7 @@ body {
 table {
   margin: 3em auto;
   border-collapse: collapse;
+  box-shadow: 0px 0px 120px 0px #000;
 }
 
 td {
@@ -36,4 +37,12 @@ tr:nth-child(even) td:nth-child(odd) {
 
 .color-white {
   color: #FFF;
+}
+
+.selected {
+  background-color: #78ff7887 !important;
+}
+
+.possible {
+  background-color: #9ad697 !important;
 }

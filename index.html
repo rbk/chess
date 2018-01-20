@@ -3,13 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>Chess game</title>
-    <link rel="stylesheet" href="styles/index.css">
+    <script type="text/javascript">
+      var d = new Date()
+    </script>
   </head>
   <body>
     <div id="chess"></div>
-    <script src="src/chess.js"></script>
-    <script src="src/ai.js"></script>
-    <script src="src/ui.js"></script>
-    <script src="src/main.js"></script>
+    <script src="src/chess.js?t=12341234"></script>
+    <script src="src/ai.js?t=12341234"></script>
+    <script src="src/ui.js?t=12341234"></script>
+    <script src="src/main.js?t=12341234"></script>
+    <script>
+      document.write('<link rel="stylesheet" href="styles/index.css">')
+    </script>
   </body>
 </html>
