@@ -1,24 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <style media="screen">
-    body {
-
-      background-color: #444;
-      color: #ffffff;
-    }
-    </style>
-  </head>
-  <body>
-
-
-
-
-
-<script>
-function Chess() {
+function Chess()
+{
   return {
     pieces: [],
     startingBoard: [
@@ -391,24 +372,3 @@ function Chess() {
 
   }
 }
-
-var c = Chess();
-c.reset_board();
-c.build_pieces();
-c.print_moves(2,0);
-
-// console.log("---Print Board------------------------")
-// c.print_board();
-
-console.log("---Print board with moves of one piece------------------------")
-// c.print_moves(0,1);
-console.log(c.pieces)
-// c.print_moves(7,0);
-
-
-</script>
-
-
-
-  </body>
-</html>
