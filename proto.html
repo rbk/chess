@@ -99,7 +99,7 @@ function Chess() {
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
-        ["00", "00", "00", "R1", "00", "00", "00", "00"],
+        ["00", "00", "00", "B1", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
         ["00", "00", "00", "00", "00", "P2", "00", "00"],
         ["00", "00", "00", "00", "00", "00", "00", "00"],
@@ -161,14 +161,12 @@ function Chess() {
       })
       this.pieces = all;
     },
-    findMoves: function(type, limit, piece) {
-
-    },
     allDiagonal: function(piece, limit) {
 
       let moves = [];
       let moveY;
       let moveX;
+      let moveCount = 0;
 
       let directions = [
         {x: "+", y: "+"},
@@ -182,18 +180,25 @@ function Chess() {
         moveY = piece.coor.y + parseInt(dir.y + 1);
         moveX = piece.coor.x + parseInt(dir.x + 1);
 
-        while (this.isCoordinateValid(moveY, moveX)) {
+        while (this.isCoordinateValid(moveY, moveX) && moveCount < limit) {
           if (this.isOpponent(moveY, moveX, piece.player)) {
             let attack = this.board[moveY][moveX]
-            this.board[moveY][moveX] = "{" + attack + "}"
+            moves.push({
+              coordinates: {x: moveX, y: moveY},
+              capture: true
+            })
             break;
           } else if (this.openSpace(moveY, moveX)){
-            this.board[moveY][moveX] = "{p}"
+            moves.push({
+              coordinates: {x: moveX, y: moveY},
+              capture: false
+            })
           } else {
             break;
           }
           moveY = moveY + parseInt(dir.y + 1);
           moveX = moveX + parseInt(dir.x + 1);
+          moveCount++;
         }
       })
 
@@ -207,6 +212,7 @@ function Chess() {
       let moves = [];
       let moveY;
       let moveX;
+      let moveCount = 0;
 
       let directions = [
         {x: null, y: "+"},
@@ -225,13 +231,20 @@ function Chess() {
           moveX = piece.coor.x;
         }
 
-        while (this.isCoordinateValid(moveY, moveX)) {
+        while (this.isCoordinateValid(moveY, moveX) && moveCount < limit) {
           if (this.isOpponent(moveY, moveX, piece.player)) {
             let attack = this.board[moveY][moveX]
             this.board[moveY][moveX] = "{" + attack + "}"
+            moves.push({
+              coordinates: {x: moveX, y: moveY},
+              capture: true
+            })
             break;
           } else if (this.openSpace(moveY, moveX)){
-            this.board[moveY][moveX] = "{p}"
+            moves.push({
+              coordinates: {x: moveX, y: moveY},
+              capture: false
+            })
           } else {
             break;
           }
@@ -240,25 +253,32 @@ function Chess() {
           } else {
             moveY = moveY + parseInt(dir.y + 1);
           }
+          moveCount++
         }
       })
 
       return moves;
 
     },
+    king: function(king) {
+      let moves;
+      let linearMoves = this.allLinear(king, 4);
+      let diagonalMoves = this.allDiagonal(king, 4);
+      moves = linearMoves.concat(diagonalMoves);
+      return moves;
+    },
+    queen: function(queen) {
+      let moves;
+      let linearMoves = this.allLinear(queen, 14);
+      let diagonalMoves = this.allDiagonal(queen, 14);
+      moves = linearMoves.concat(diagonalMoves);
+      return moves;
+    },
     rook: function(rook) {
-      return this.allLinear(rook, 0)
+      return this.allLinear(rook, 14)
     },
     bishop: function(bishop) {
-      return this.allDiagonal(bishop)
-
-      // type(s), limit
-      this.findMoves("diagonal", 0) // bishop
-      this.findMoves("linear", 0) // rook
-      this.findMoves(["diagonal", "linear"], 1) // king
-      this.findMoves(["diagonal", "linear"], 0) // queen
-      this.findMoves("knight", 0) // knight
-      this.findMoves("pawn", 1) // pawn
+      return this.allDiagonal(bishop, 14)
     },
     pawn: function(pawn) {
       let moves = [];
@@ -382,7 +402,7 @@ c.calculate_other_properties();
 
 c.print_board();
 console.log("------------------------")
-// c.print_moves(3,3);
+c.print_moves(3,3);
 // c.print_moves(7,0);
 
 
