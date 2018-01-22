@@ -1,6 +1,7 @@
-function Chess()
+function Chess(config)
 {
   return {
+    board: [],
     pieces: [],
     startingBoard: [
       ["R1", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
@@ -12,6 +13,24 @@ function Chess()
       ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
       ["R2", "K2", "B2", "W2", "Q2", "B2", "K2", "R2"],
     ],
+    coordinateBoard: [
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0],
+    ],
+    // @TODO implment this method of adding pieces
+    // Use the coordinate board to build the startingBoard
+    addDefaultPieces: function() {
+      let pieces = []
+      pieces.push(new Queen(1, {x: 4, y: 0}));
+      pieces.push(new Queen(2, {x: 4, y: 7}));
+      // console.log(pieces)
+    },
     // in_danger: false, // FACT - check whole board for possible attack??
     // place_opponent_in_check: false, // FACT- How???? If can attack
     // protected: false, // FACT
@@ -21,22 +40,18 @@ function Chess()
         console.log(row)
       })
     },
-    calculate_moves: function() {},
-    calculate_other_properties: function() {},
-    reset_board: function() {
-      this.board = this.startingBoard;
-      this.build_pieces();
-    },
-    set_board: function(board) {
+    setBoard: function(board) {
       this.board = board;
+      this.buildPieces(board);
     },
-    build_pieces: function() {
+    buildPieces: function(board) {
       let all = [];
-      this.board.map((row, y) => {
+      board.map((row, y) => {
         row.map((p, x) => {
           let team_number = p.split("")[1]
           let direction = "";
           let name = "";
+          let value = 0;
           if (team_number == "1") {
             direction = "+"
           } else if (team_number == 2){
@@ -44,37 +59,66 @@ function Chess()
           }
           if (p.match("P")) {
             name = "pawn";
+            value = 1;
           }
           if (p.match("R")) {
             name = "rook";
+            value = 3;
           }
           if (p.match("K")) {
             name = "knight";
-          }
-          if (p.match("Q")) {
-            name = "queen";
-          }
-          if (p.match("W")) {
-            name = "king";
+            value = 3;
           }
           if (p.match("B")) {
             name = "bishop";
+            value = 3;
+          }
+          if (p.match("Q")) {
+            name = "queen";
+            value = 5;
+          }
+          if (p.match("W")) {
+            name = "king";
+            value = 10;
           }
           if (name != "") {
             all.push({
-              "name" : name,
-              "player" : Number(team_number),
-              "direction" : direction,
-              "coor" : {x: x, y: y},
-              "advanced" : false,
-              "moves" : [],
-              "key": p
+              name : name,
+              player : Number(team_number),
+              direction : direction,
+              coor : {x: x, y: y},
+              advanced : false,
+              moves : [],
+              key: p,
+              value : value,
+              inDanger: false,
             })
           }
           x++
         })
         y++
       })
+      this.pieces = this.calculateMoves(all);
+      this.pieces = this.calculateDanger(this.pieces);
+    },
+    calculateDanger: function(pieces) {
+      pieces.map((piece, index) => {
+        let x = piece.coor.x;
+        let y = piece.coor.y;
+        pieces.map((piece2, index2) => {
+          if (piece2.moves) {
+            piece2.moves.map((move, index) => {
+              if (move.coor.x == x && move.coor.y == y && move.capture) {
+                // set to true if a piece can currently attack thie piece
+                piece.inDanger = true;
+              }
+            })
+          }
+        })
+      })
+      return pieces;
+    },
+    calculateMoves: function(all) {
       all.map((piece) => {
         if (piece.name == "pawn") {
           piece.moves = this.pawn(piece)
@@ -95,7 +139,7 @@ function Chess()
           piece.moves = this.king(piece)
         }
       })
-      this.pieces = all;
+      return all;
     },
     allDiagonal: function(piece, limit) {
 
@@ -397,6 +441,20 @@ function Chess()
           }
         })
       }
+      // Rebuild all pieces to calculate possible moves again
+      console.log(this.board)
+      this.buildPieces(this.board);
+    },
+    getBoard: function() {
+      let cloneBoard = JSON.stringify(this.board);
+      return JSON.parse(cloneBoard);
+    },
+    getPieces: function() {
+      this.buildPieces(this.board);
+      return this.pieces;
+    },
+    init: function() {
+      this.buildPieces(this.startingBoard);
     }
   }
 }
