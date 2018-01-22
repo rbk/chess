@@ -1,14 +1,15 @@
 function ChessUi()
 {
 
+  // https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode#Unicode_codepoints_and_HTML
   const armyMap = [
     { key: "00", display: "" },
-    { key: "P", display: "i" },
-    { key: "R", display: "R" },
-    { key: "K", display: "Kn" },
-    { key: "B", display: "B" },
-    { key: "W", display: "K" },
-    { key: "Q", display: "Q" },
+    { key: "P", display: "&#9823;" },
+    { key: "R", display: "&#9820;" },
+    { key: "K", display: "&#9822;" },
+    { key: "B", display: "&#9821;" },
+    { key: "W", display: "&#9818;" },
+    { key: "Q", display: "&#9819;" },
   ];
 
   function getIcon(key) {
