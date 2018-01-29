@@ -46,3 +46,9 @@ tr:nth-child(even) td:nth-child(odd) {
 .possible {
   background-color: #9ad697 !important;
 }
+
+.management {
+  position: fixed;
+  left: 0;
+  font-size: 24px;
+}

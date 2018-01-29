@@ -2,6 +2,16 @@
 
 The game of chess.. actually nothing yet.
 
+## AI notes
+
+- DANGER move puts piece in danger (-2)
+- COST move captures a lower valued piece (-1)
+- PROTECTION move provides protection (+2)
+- COST+PROTECTION Captures lower piece, but provides protection (+3)
+- HIGH VALUE - High value pieces like Queen and King take less risks
+- IN DANGER - is the piece currently in danger and if so, what is the value of that piece
+
+
 ## Resources
 
 - https://lichess.org/video/GMgIKo2GM6M

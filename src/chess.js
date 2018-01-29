@@ -1,8 +1,34 @@
-function Chess(config)
+function Chess()
 {
   return {
+    turn: null,
     board: [],
     pieces: [],
+    player1: {
+      color: null,
+      pieces: [],
+      moves: [],
+      lostPieces: [],
+      inCheck: false,
+      checkmate: false,
+      stalemated: false,
+      rookMoved: false,
+      castleMoved: false,
+    },
+    player2: {
+      color: null,
+      pieces: [],
+      moves: [],
+      lostPieces: [],
+      inCheck: false,
+      checkmate: false,
+      stalemated: false,
+      rookMoved: false,
+      castleMoved: false,
+    },
+    setTurn: function(player) {
+      this.turn = this[player];
+    },
     startingBoard: [
       ["R1", "K1", "B1", "W1", "Q1", "B1", "K1", "R1"],
       ["P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1"],
@@ -13,53 +39,33 @@ function Chess(config)
       ["P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2"],
       ["R2", "K2", "B2", "W2", "Q2", "B2", "K2", "R2"],
     ],
-    coordinateBoard: [
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],
-    ],
-    // @TODO implment this method of adding pieces
-    // Use the coordinate board to build the startingBoard
-    addDefaultPieces: function() {
-      let pieces = []
-      pieces.push(new Queen(1, {x: 4, y: 0}));
-      pieces.push(new Queen(2, {x: 4, y: 7}));
-      // console.log(pieces)
-    },
-    // @TODO implement being in check and how that changes the possible moves for a player
-    isPlayerInCheck: function(player) {
-
-      let playerPieces = this.pieces.filter((piece) => {
-        // return p
-      })
-      // get the kind for this player,
-      // loop through all moves
-      // if move can attach this king return true
-
-      // console.log(king)
-    },
     setBoard: function(board) {
       this.board = board;
       this.buildPieces(board);
     },
+    /**
+     * Build all the piece definitions from visual array
+     * @param  {array} board 8 by 8 array of special keys
+     * @return {array} Sets this object pieces array
+     */
     buildPieces: function(board) {
       let all = [];
       board.map((row, y) => {
         row.map((p, x) => {
+
           let team_number = p.split("")[1]
+
           let direction = "";
           let name = "";
           let value = 0;
-          if (team_number == "1") {
-            direction = "+"
+
+          // Set direction
+          if (team_number == 2) {
+            direction = "+";
           } else if (team_number == 2){
             direction = "-"
           }
+
           if (p.match("P")) {
             name = "pawn";
             value = 1;
@@ -103,6 +109,33 @@ function Chess(config)
       })
       this.pieces = this.calculateMoves(all);
       this.pieces = this.calculateDanger(this.pieces);
+      this.player1.pieces = this.getPlayerPieces(this.pieces, 1);
+      this.player2.pieces = this.getPlayerPieces(this.pieces, 2);
+      this.player1.moves = this.getPlayerMoves(this.player1.pieces);
+      this.player2.moves = this.getPlayerMoves(this.player2.pieces);
+      this.removeMovesThatLeavePlayerInCheck();
+    },
+    getPlayerPieces: function(pieces, player) {
+      let result = [];
+      result = pieces.filter((piece) => {
+        return piece.player == player;
+      });
+      return result;
+    },
+    getPlayerMoves: function(pieces) {
+      let result = [];
+      pieces.forEach((piece) => {
+        piece.moves.forEach((move) => {
+          result.push(move)
+        })
+      });
+      return result;
+    },
+    removeMovesThatLeavePlayerInCheck: function() {
+
+    },
+    identifyAvailableMovesAfterCheck: function() {
+
     },
     /**
      * Calculate danger level for each piece
@@ -117,6 +150,10 @@ function Chess(config)
           if (piece2.moves) {
             piece2.moves.map((move, index) => {
               if (move.coor.x == x && move.coor.y == y && move.capture) {
+                // If the a king is in danger, put player in check
+                if (piece.name == "king") {
+                  this[`player${piece.player}`].inCheck = true;
+                }
                 // set to true if a piece can currently attack thie piece
                 piece.inDanger = true;
               }
@@ -462,7 +499,6 @@ function Chess(config)
         })
       }
       // Rebuild all pieces to calculate possible moves again
-      console.log(this.board)
       this.buildPieces(this.board);
     },
     getBoard: function() {
@@ -473,7 +509,9 @@ function Chess(config)
       this.buildPieces(this.board);
       return this.pieces;
     },
-    init: function() {
+    init: function(config) {
+      this.player1.color = config.player1.color;
+      this.player2.color = config.player2.color;
       this.buildPieces(this.startingBoard);
     }
   }

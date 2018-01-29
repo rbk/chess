@@ -1,9 +1,18 @@
-const game = Chess({});
+const game = Chess();
 const ai = ChessAi();
 const ui = ChessUi();
 const gameManagement = {}
 
-game.init();
+game.init({
+  player1: {
+    color: "black",
+    user: "computer"
+  },
+  player2: {
+    color: "white",
+    user: "human"
+  }
+});
 
 game.setBoard([
   ["00", "00", "00", "00", "00", "00", "00", "00"],
@@ -18,11 +27,17 @@ game.setBoard([
 
 // game.setBoard(game.startingBoard)
 
-// console.log('pieces', game.pieces)
+console.log('pieces', game.pieces)
 // console.log('board', game.board)
 
-ui.displayBoard(game.board, game.pieces);
+ui.displayBoard(game);
+
+game.setTurn("player1");
+
+console.log(game.player1)
+console.log(game.player2)
+
+
 
 // log which move moves are the best
-ai.player = 2;
-ai.thinkAhead(game);
+// console.log(ai.player);

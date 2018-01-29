@@ -52,7 +52,9 @@ function ChessUi()
     }
   }
 
-  function buildTable(board, pieces) {
+  function buildTable(game) {
+    let pieces = game.pieces;
+    let board = game.board;
     // console.log(board)
     let html = "<table>";
     board.map((row,rowIndex) => {
@@ -102,7 +104,7 @@ function ChessUi()
 
   function appendTable(html) {
     let chessElement = document.getElementById('chess');
-    chessElement.innerHTML = html;
+    chessElement.innerHTML = chessElement.innerHTML + html;
   }
 
   return {
