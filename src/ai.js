@@ -3,8 +3,7 @@ function ChessAi(player)
 
   function thinkAhead(game) {
 
-    let pieces = game.getPieces();
-    let board = game.getBoard();
+
 
     // calculate possibilites after imagining a certain move
     // What is the outcome?
@@ -25,6 +24,11 @@ function ChessAi(player)
     pieces.filter((piece, index) => {
       return calulateMoveStrengths(piece) > piece.strength
     })
+
+    // in_danger: false, // FACT - check whole board for possible attack??
+    // place_opponent_in_check: false, // FACT- How???? If can attack
+    // protected: false, // FACT
+
 
   }
 
@@ -50,39 +54,23 @@ function ChessAi(player)
   }
 
   return {
-    user: 0,
-    setUser: function(number) {
-      this.user = number;
+    player: 0,
+    pieces: [],
+    thinkAhead: function(game) {
+
+      let pieces = game.getPieces();
+      let board = game.getBoard();
+
+      // this.pieces = pieces.filter((p) => {
+      //   if (p.player == this.player && p.moves.length > 0) {
+      //     return true;
+      //   }
+      // });
+
+      console.log(pieces)
+
     },
-    getMove: function(pieces, player) {
 
-      // console.log(pieces)
-
-      // build array of pieces that can move for player
-      let players = pieces.filter((p)=>{
-        if (p.player == player && p.moves.length > 0) {
-          return true;
-        }
-      })
-
-      // console.log()
-      // select on at random
-      let randomPiece = players[Math.floor(Math.random()*players.length)];
-
-      if (!randomPiece) {
-        return false;
-      }
-      // console.log(Math.floor(Math.random()*randomPiece.moves.length))
-      // select one of the moves at random
-      let randomMove = randomPiece.moves[Math.floor(Math.random()*randomPiece.moves.length)];
-      // console.log(randomMove)
-      // return the coordinates of "to" and "from"
-
-      return {
-        from: {y: randomPiece.coor.y, x: randomPiece.coor.x},
-        to: {y: randomMove.coor.y, x: randomMove.coor.x}
-      }
-    },
     calculate_move_strength: function(all) {
       // console.log(all)
       all.map((piece, index) => {
@@ -173,6 +161,18 @@ function ChessAi(player)
       // console.log(q.moves[0])
 
       return all;
+    },
+    // Random Move just for fun
+    getMove: function(pieces, player) {
+      let randomPiece = players[Math.floor(Math.random()*players.length)];
+      if (!randomPiece) {
+        return false;
+      }
+      let randomMove = randomPiece.moves[Math.floor(Math.random()*randomPiece.moves.length)];
+      return {
+        from: {y: randomPiece.coor.y, x: randomPiece.coor.x},
+        to: {y: randomMove.coor.y, x: randomMove.coor.x}
+      }
     },
   }
 

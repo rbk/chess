@@ -31,14 +31,17 @@ function Chess(config)
       pieces.push(new Queen(2, {x: 4, y: 7}));
       // console.log(pieces)
     },
-    // in_danger: false, // FACT - check whole board for possible attack??
-    // place_opponent_in_check: false, // FACT- How???? If can attack
-    // protected: false, // FACT
-    log_board: function() {
-      console.clear();
-      this.board.map((row) => {
-        console.log(row)
+    // @TODO implement being in check and how that changes the possible moves for a player
+    isPlayerInCheck: function(player) {
+
+      let playerPieces = this.pieces.filter((piece) => {
+        // return p
       })
+      // get the kind for this player,
+      // loop through all moves
+      // if move can attach this king return true
+
+      // console.log(king)
     },
     setBoard: function(board) {
       this.board = board;
@@ -101,6 +104,11 @@ function Chess(config)
       this.pieces = this.calculateMoves(all);
       this.pieces = this.calculateDanger(this.pieces);
     },
+    /**
+     * Calculate danger level for each piece
+     * @param  {array} pieces
+     * @return {array} pieces with inDanger attribute
+     */
     calculateDanger: function(pieces) {
       pieces.map((piece, index) => {
         let x = piece.coor.x;
@@ -114,8 +122,8 @@ function Chess(config)
               }
             })
           }
-        })
-      })
+        });
+      });
       return pieces;
     },
     calculateMoves: function(all) {
@@ -158,24 +166,15 @@ function Chess(config)
       directions.map((dir) => {
 
         moveCount = 0;
-
         moveY = piece.coor.y + parseInt(dir.y + 1);
         moveX = piece.coor.x + parseInt(dir.x + 1);
 
         while (this.isCoordinateValid(moveY, moveX) && moveCount < limit) {
-          if (this.isOpponent(moveY, moveX, piece.player)) {
-            let attack = this.board[moveY][moveX]
-            moves.push({
-              coor: {x: moveX, y: moveY},
-              capture: true
-            })
-            break;
-          } else if (this.openSpace(moveY, moveX)){
-            moves.push({
-              coor: {x: moveX, y: moveY},
-              capture: false
-            })
-          } else {
+          let move = this.getMove(moveY, moveX, piece);
+          if (move) {
+            moves.push(move);
+          }
+          if (!this.openSpace(moveY, moveX)) {
             break;
           }
           moveY = moveY + parseInt(dir.y + 1);
@@ -214,19 +213,11 @@ function Chess(config)
         }
 
         while (this.isCoordinateValid(moveY, moveX) && moveCount < limit) {
-          if (this.isOpponent(moveY, moveX, piece.player)) {
-            let attack = this.board[moveY][moveX]
-            moves.push({
-              coor: {x: moveX, y: moveY},
-              capture: true
-            })
-            break;
-          } else if (this.openSpace(moveY, moveX)){
-            moves.push({
-              coor: {x: moveX, y: moveY},
-              capture: false
-            })
-          } else {
+          let move = this.getMove(moveY, moveX, piece);
+          if (move) {
+            moves.push(move);
+          }
+          if (!this.openSpace(moveY, moveX)) {
             break;
           }
           if (dir.y == null) {
@@ -258,18 +249,9 @@ function Chess(config)
       directions.map((dir) => {
         moveY = piece.coor.y + parseInt(dir.y);
         moveX = piece.coor.x + parseInt(dir.x);
-
-        if (this.isOpponent(moveY, moveX, piece.player)) {
-          let attack = this.board[moveY][moveX]
-          moves.push({
-            coor: {x: moveX, y: moveY},
-            capture: true
-          })
-        } else if (this.openSpace(moveY, moveX)){
-          moves.push({
-            coor: {x: moveX, y: moveY},
-            capture: false
-          })
+        let move = this.getMove(moveY, moveX, piece);
+        if (move) {
+          moves.push(move);
         }
       })
       return moves;
@@ -302,10 +284,12 @@ function Chess(config)
 
       moveY = pawn.coor.y + parseInt(pawn.direction + 1);
       moveX = pawn.coor.x;
+
       if (this.openSpace(moveY, moveX)) {
         moves.push({
           coor: {x: moveX, y: moveY},
-          capture: false
+          capture: false,
+          check: false,
         })
       }
 
@@ -324,7 +308,8 @@ function Chess(config)
         if (this.openSpace(moveY, moveX)) {
           moves.push({
             coor: {x: moveX, y: moveY},
-            capture: false
+            capture: false,
+            check: false,
           })
         }
       }
@@ -335,7 +320,8 @@ function Chess(config)
       if (this.isOpponent(moveY, moveX, pawn.player)) {
         moves.push({
           coor: {x: moveX, y: moveY},
-          capture: true
+          capture: true,
+          check: this.isKing(this.board[moveY][moveX]),
         })
       }
 
@@ -345,7 +331,8 @@ function Chess(config)
       if (this.isOpponent(moveY, moveX, pawn.player)) {
         moves.push({
           coor: {x: moveX, y: moveY},
-          capture: true
+          capture: true,
+          check: this.isKing(this.board[moveY][moveX]),
         })
       }
 
@@ -387,6 +374,39 @@ function Chess(config)
         return false;
       }
       return true;
+    },
+    isKing: function(piece) {
+      if (piece.match('W')) {
+        return true;
+      }
+      return false;
+    },
+    /**
+     * Get possible move given a piece and corrdinates
+     * @param  {integer} moveY Coordinate
+     * @param  {integer} moveX Coordinate
+     * @param  {object} piece
+     * @return {object} Returns false if move is not valid
+     */
+    getMove: function(moveY, moveX, piece) {
+      let moveObject = {}
+      if (this.isOpponent(moveY, moveX, piece.player)) {
+        let attack = this.board[moveY][moveX];
+        moveObject.coor = {x: moveX, y: moveY};
+        moveObject.capture = true;
+        moveObject.check = false;
+        if (this.isKing(attack)) {
+          moveObject.check = true;
+        }
+        return moveObject;
+      } else if (this.openSpace(moveY, moveX)){
+        moveObject.coor = {x: moveX, y: moveY};
+        moveObject.capture = false;
+        moveObject.check = false;
+        return moveObject;
+      } else {
+        return false;
+      }
     },
     log_moves: function(y, x) {
       console.clear();

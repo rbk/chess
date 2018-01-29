@@ -1,7 +1,6 @@
 body {
   background-color: #444;
   color: #ffffff;
-  /* font-weight: bold; */
   font-size: 36px;
 }
 
@@ -17,9 +16,6 @@ td, .board-tile {
   text-align: center;
   vertical-align: center;
 }
-.board-tile {
-  /* height: auto; */
-}
 
 tr:nth-child(even) td:nth-child(even) {
   background-color: #bdbdbd;
@@ -34,7 +30,6 @@ tr:nth-child(odd) td:nth-child(even) {
 tr:nth-child(even) td:nth-child(odd) {
   background-color: #868686;
 }
-
 
 .color-black {
   color: #000;

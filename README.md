@@ -2,6 +2,10 @@
 
 The game of chess.. actually nothing yet.
 
+## Resources
+
+- https://lichess.org/video/GMgIKo2GM6M
+
 ## Todo
 
 - RULES
@@ -17,7 +21,7 @@ The game of chess.. actually nothing yet.
     - COST+PROTECTION Captures lower piece, but provides protection (+3)
     - HIGH VALUE - High value pieces like Queen and King take less risks
     - IN DANGER - is the piece currently in danger and if so, what is the value of that piece
-    
+
 
   - Tell computer to make move base on score
 
