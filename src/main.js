@@ -15,10 +15,10 @@ game.init({
 });
 
 game.setBoard([
-  ["00", "00", "00", "00", "00", "00", "00", "00"],
+  ["00", "00", "00", "W1", "00", "00", "00", "00"],
   ["00", "00", "00", "00", "00", "00", "00", "00"],
   ["00", "K1", "00", "00", "00", "00", "00", "00"],
-  ["00", "00", "00", "Q1", "00", "00", "00", "00"],
+  ["00", "00", "P1", "Q1", "00", "00", "00", "00"],
   ["00", "00", "00", "00", "P2", "00", "00", "00"],
   ["00", "00", "00", "00", "00", "P2", "00", "00"],
   ["00", "00", "00", "00", "00", "00", "00", "00"],
@@ -27,15 +27,17 @@ game.setBoard([
 
 // game.setBoard(game.startingBoard)
 
-console.log('pieces', game.pieces)
+// console.log('pieces', game.pieces)
 // console.log('board', game.board)
 
+// ui.displayBoard(game);
+
+// game.setTurn("player2");
 ui.displayBoard(game);
 
-game.setTurn("player1");
-
-console.log(game.player1)
-console.log(game.player2)
+// console.log(`Player 1 check status: ${game.player1.inCheck}`)
+// console.log(`Player 2 check status: ${game.player2.inCheck}`)
+// console.log(game.player2)
 
 
 

@@ -60,9 +60,9 @@ function Chess()
           let value = 0;
 
           // Set direction
-          if (team_number == 2) {
+          if (team_number == 1) {
             direction = "+";
-          } else if (team_number == 2){
+          } else {
             direction = "-"
           }
 
@@ -113,7 +113,21 @@ function Chess()
       this.player2.pieces = this.getPlayerPieces(this.pieces, 2);
       this.player1.moves = this.getPlayerMoves(this.player1.pieces);
       this.player2.moves = this.getPlayerMoves(this.player2.pieces);
-      this.removeMovesThatLeavePlayerInCheck();
+      this.player1King = this.getPlayerKing(this.player1.pieces, 1);
+      this.player2King = this.getPlayerKing(this.player2.pieces, 2);
+      console.log(this.pieces)
+      // I need to set this.pieces to the new pieces without the moves for the king
+      this.pieces = this.removeMovesThatLeavePlayerInCheck(this.pieces);
+    },
+    removeCheckMoves: function(king, player_number) {
+      let result = [];
+      return result;
+    },
+    getPlayerKing: function(pieces, player) {
+      result = pieces.filter((piece) => {
+        return (piece.name == "king" && player == piece.player);
+      });
+      return (result.length == 1) ? result[0] : false;
     },
     getPlayerPieces: function(pieces, player) {
       let result = [];
@@ -131,10 +145,35 @@ function Chess()
       });
       return result;
     },
-    removeMovesThatLeavePlayerInCheck: function() {
+    removeMovesThatLeavePlayerInCheck: function(pieces) {
 
+      if (this.player1King.inDanger) {
+
+          // remove any move that would leave the king in danger
+          console.log(this.player1King)
+        // this.removeCheckMoves(this.player1King, 1);
+      }
+      //
+      if (this.player2King.inDanger) {
+          console.log(this.player2King)
+        // this.pieces = this.removeCheckMoves(this.player2King, 2);
+        // remove any move that would leave the king in danger
+      }
+      return pieces;
+
+
+      // for each opponent moves if any match my kings moves, remove it from my kings moves
+      // this.player1King.moves.map((move1, index) => {
+      //   this.player2.moves.filter((move2) => {
+      //
+      //   })
+      // });
     },
     identifyAvailableMovesAfterCheck: function() {
+
+
+
+
 
     },
     /**
@@ -431,7 +470,6 @@ function Chess()
         let attack = this.board[moveY][moveX];
         moveObject.coor = {x: moveX, y: moveY};
         moveObject.capture = true;
-        moveObject.check = false;
         if (this.isKing(attack)) {
           moveObject.check = true;
         }
@@ -439,7 +477,6 @@ function Chess()
       } else if (this.openSpace(moveY, moveX)){
         moveObject.coor = {x: moveX, y: moveY};
         moveObject.capture = false;
-        moveObject.check = false;
         return moveObject;
       } else {
         return false;

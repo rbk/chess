@@ -105,6 +105,7 @@ function ChessUi()
   function appendTable(html) {
     let chessElement = document.getElementById('chess');
     chessElement.innerHTML = chessElement.innerHTML + html;
+    // chessElement.innerHTML = html;
   }
 
   return {
