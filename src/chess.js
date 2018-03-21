@@ -107,21 +107,7 @@ function Chess()
         })
         y++
       })
-      this.pieces = this.calculateMoves(all);
-      this.pieces = this.calculateDanger(this.pieces);
-      this.player1.pieces = this.getPlayerPieces(this.pieces, 1);
-      this.player2.pieces = this.getPlayerPieces(this.pieces, 2);
-      this.player1.moves = this.getPlayerMoves(this.player1.pieces);
-      this.player2.moves = this.getPlayerMoves(this.player2.pieces);
-      this.player1King = this.getPlayerKing(this.player1.pieces, 1);
-      this.player2King = this.getPlayerKing(this.player2.pieces, 2);
-      console.log(this.pieces)
-      // I need to set this.pieces to the new pieces without the moves for the king
-      this.pieces = this.removeMovesThatLeavePlayerInCheck(this.pieces);
-    },
-    removeCheckMoves: function(king, player_number) {
-      let result = [];
-      return result;
+      return all;
     },
     getPlayerKing: function(pieces, player) {
       result = pieces.filter((piece) => {
@@ -146,18 +132,43 @@ function Chess()
       return result;
     },
     removeMovesThatLeavePlayerInCheck: function(pieces) {
-
+      console.log(pieces)
       if (this.player1King.inDanger) {
-
-          // remove any move that would leave the king in danger
-          console.log(this.player1King)
-        // this.removeCheckMoves(this.player1King, 1);
       }
-      //
+
       if (this.player2King.inDanger) {
-          console.log(this.player2King)
-        // this.pieces = this.removeCheckMoves(this.player2King, 2);
         // remove any move that would leave the king in danger
+        // simulate every possible move
+        //
+        // for (var i = 0; i < pieces.length; i++) {
+        //     if (pieces[i].player == 2) {
+        //         var from = pieces[i].coor;
+        //         console.log("simulating: " + pieces[i].name);
+        //         for (var c = 0; c < pieces[i].moves.length; c++) {
+        //           var simulated = this.simulateMove(from, pieces[i].moves[c].coor);
+        //           if (!simulated[7] || !simulated[6]){ continue; }
+        //           console.log(simulated[7].inDanger)
+        //           console.log(simulated[6].coor)
+        //           console.log(simulated)
+        //         }
+        //     }
+        // }
+
+        var sim = this.simulateMove("R2", {x:7,y:6}, {x:3, y:6});
+        console.log("AFTER SIM MOVE FUNC")
+        console.log(sim)
+        // for each piece (player 2)
+        // for each move
+          // move piece
+          // check if K1 in dangee
+          // if danger, remove the move
+          // move piece back to original position
+        // return moves
+
+        // if move leaves player in check, remove the move from "moves" array
+
+
+
       }
       return pieces;
 
@@ -168,13 +179,6 @@ function Chess()
       //
       //   })
       // });
-    },
-    identifyAvailableMovesAfterCheck: function() {
-
-
-
-
-
     },
     /**
      * Calculate danger level for each piece
@@ -191,8 +195,10 @@ function Chess()
               if (move.coor.x == x && move.coor.y == y && move.capture) {
                 // If the a king is in danger, put player in check
                 if (piece.name == "king") {
+                  // TODO MUTATION BAD -
                   this[`player${piece.player}`].inCheck = true;
                 }
+
                 // set to true if a piece can currently attack thie piece
                 piece.inDanger = true;
               }
@@ -202,6 +208,9 @@ function Chess()
       });
       return pieces;
     },
+    //
+    // Do logic for each kind
+    //
     calculateMoves: function(all) {
       all.map((piece) => {
         if (piece.name == "pawn") {
@@ -515,18 +524,22 @@ function Chess()
       })
       this.pieces = newArray;
     },
+    // TODO This issue here is with mutation
+    // Since I am mutating the main board I cannot resuse the move function
+    // I need to reuse this function to simulate moves to look for possible check moves
     move: function(from, to) {
       let pieceExists = this.pieces.filter((obj) => {
         if (obj.coor.x == from.x && obj.coor.y == from.y) {
           return obj;
         }
         return false;
-      })
+      });
       if (pieceExists.length > 0) {
         let piece = pieceExists[0];
         let moves = piece.moves;
         // validate move
         moves.forEach((obj) => {
+          // if TO move exists
           if (obj.coor.x == to.x && obj.coor.y == to.y) {
             // update this.board with piece key
             this.board[to.y][to.x] = piece.key;
@@ -536,7 +549,21 @@ function Chess()
         })
       }
       // Rebuild all pieces to calculate possible moves again
-      this.buildPieces(this.board);
+      // this.buildPieces(this.board);
+    },
+    simulateMove: function(key, from, to) {
+      var boardClone = this.getBoard();
+      var simPieces = [];
+      boardClone[to.y][to.x] = key;
+      boardClone[from.y][from.x] = "00";
+      console.log("SIM BOARD")
+      console.log(boardClone)
+
+      // TODO Find out why this is not recalculating danger on return
+      simPieces = this.buildPieces(boardClone)
+      simPieces = this.calculateMoves(simPieces);
+      simPieces = this.calculateDanger(simPieces);
+      return simPieces;
     },
     getBoard: function() {
       let cloneBoard = JSON.stringify(this.board);
@@ -546,10 +573,24 @@ function Chess()
       this.buildPieces(this.board);
       return this.pieces;
     },
+    updateGame: function(board) {
+      this.board = board;
+      this.pieces = this.buildPieces(board);
+      this.pieces = this.calculateMoves(this.pieces);
+      this.pieces = this.calculateDanger(this.pieces);
+      this.player1.pieces = this.getPlayerPieces(this.pieces, 1);
+      this.player2.pieces = this.getPlayerPieces(this.pieces, 2);
+      this.player1.moves = this.getPlayerMoves(this.player1.pieces);
+      this.player2.moves = this.getPlayerMoves(this.player2.pieces);
+      this.player1King = this.getPlayerKing(this.player1.pieces, 1);
+      this.player2King = this.getPlayerKing(this.player2.pieces, 2);
+      // I need to set this.pieces to the new pieces without the moves for the king
+      this.pieces = this.removeMovesThatLeavePlayerInCheck(this.pieces);
+    },
     init: function(config) {
       this.player1.color = config.player1.color;
       this.player2.color = config.player2.color;
-      this.buildPieces(this.startingBoard);
+      // this.updateGame(this.startingBoard)
     }
   }
 }
