@@ -46,11 +46,10 @@ game.updateGame([
 // game.setTurn("player2");
 
 ui.displayBoard(game);
-game.move({x:7,y:6}, {x:3, y:6});
-console.log("AFTER MOVE FUNC")
-console.log(game.board)
-game.updateGame(game.board)
-ui.displayBoard(game);
+// game.move({x:7,y:6}, {x:3, y:6});
+// console.log("AFTER MOVE FUNC")
+// game.updateGame(game.board)
+// ui.displayBoard(game);
 
 
 // console.log(`Player 1 check status: ${game.player1.inCheck}`)

@@ -94,9 +94,9 @@ function Chess()
             all.push({
               name : name,
               player : Number(team_number),
-             // direction : direction,
+              direction : direction,
               coor : {x: x, y: y},
-              //advanced : false,
+              advanced : false,
               moves : [],
               key: p,
               value : value,
@@ -131,42 +131,11 @@ function Chess()
       });
       return result;
     },
-    removeMovesThatLeavePlayerInCheck: function(pieces) {
-      console.log(pieces)
-      if (this.player1King.inDanger) {
-      }
-
-      if (this.player2King.inDanger) {
-        // remove any move that would leave the king in danger
-        // simulate every possible move
-        //
-        // for (var i = 0; i < pieces.length; i++) {
-        //     if (pieces[i].player == 2) {
-        //         var from = pieces[i].coor;
-        //         console.log("simulating: " + pieces[i].name);
-        //         for (var c = 0; c < pieces[i].moves.length; c++) {
-        //           var simulated = this.simulateMove(from, pieces[i].moves[c].coor);
-        //           if (!simulated[7] || !simulated[6]){ continue; }
-        //           console.log(simulated[7].inDanger)
-        //           console.log(simulated[6].coor)
-        //           console.log(simulated)
-        //         }
-        //     }
-        // }
-
-        var sim = this.simulateMove("R2", {x:7,y:6}, {x:3, y:6});
-        console.log("AFTER SIM MOVE FUNC")
-        console.log(sim)
-        // for each piece (player 2)
-        // for each move
-          // move piece
-          // check if K1 in dangee
-          // if danger, remove the move
-          // move piece back to original position
-        // return moves
-
-        // if move leaves player in check, remove the move from "moves" array
-      }
+    // If player in check, remove moves that leave player in check
+    handleCheck: function(pieces) {
+      var sim = this.simulateMove("R2", {x:7,y:6}, {x:3, y:6});
+      console.log("AFTER SIM MOVE FUNC")
+      console.log(sim)
       return pieces;
     },
     /**
@@ -175,29 +144,20 @@ function Chess()
      * @return {array} pieces with inDanger attribute
      */
     calculateDanger: function(pieces) {
-      pieces.map((piece, index) => {
-        let x = piece.coor.x;
-        let y = piece.coor.y;
-        console.log(piece)
-        pieces.map((piece2, index2) => {
-
-          if (piece2.moves) {
-            piece2.moves.map((move, index) => {
-              console.log(piece2)
-              if (move.coor.x == x && move.coor.y == y && move.capture) {
-                // If the a king is in danger, put player in check
-                if (piece.name == "king") {
-                  // TODO MUTATION BAD -
-                  this[`player${piece.player}`].inCheck = true;
-                }
-
-                // set to true if a piece can currently attack thie piece
-                piece.inDanger = true;
-              }
-            })
+      for(var i=0; i < pieces.length; i++) {
+        var p = pieces[i];
+        var x = p.coor.x;
+        var y = p.coor.y;
+        for (var c=0; c < pieces.length; c++) {
+          var p2 = pieces[c];
+          for (var k=0; k < p2.moves.length; k++) {
+            var move = p2.moves[k];
+            if (move.coor.x == x && move.coor.y == y && move.capture) {
+              pieces[i].inDanger = true;
+            }
           }
-        });
-      });
+        }
+      }
       return pieces;
     },
     //
@@ -416,15 +376,6 @@ function Chess()
       return moves
 
     },
-    reachedOpponent: function(y, x, player) {
-      if (!this.isCoordinateValid(y,x)) {
-        return false;
-      }
-      if (!this.board[y][x].match(player)) {
-        return false;
-      }
-      return false;
-    },
     isCoordinateValid: function(y, x) {
       if (this.board[y] && this.board[y][x]) {
         return true;
@@ -546,15 +497,12 @@ function Chess()
     simulateMove: function(key, from, to) {
       var boardClone = this.getBoard();
       var simPieces = [];
-      boardClone[to.y][to.x] = key;
-      boardClone[from.y][from.x] = "00";
-      console.log("SIM BOARD")
-      console.log(boardClone)
-
-      // TODO Find out why this is not recalculating danger on return
-      simPieces = this.buildPieces(boardClone)
+      this.board[to.y][to.x] = key;
+      this.board[from.y][from.x] = "00";
+      simPieces = this.buildPieces(this.board)
       simPieces = this.calculateMoves(simPieces);
       simPieces = this.calculateDanger(simPieces);
+      this.board = boardClone;
       return simPieces;
     },
     getBoard: function() {
@@ -570,14 +518,7 @@ function Chess()
       this.pieces = this.buildPieces(board);
       this.pieces = this.calculateMoves(this.pieces);
       this.pieces = this.calculateDanger(this.pieces);
-      this.player1.pieces = this.getPlayerPieces(this.pieces, 1);
-      this.player2.pieces = this.getPlayerPieces(this.pieces, 2);
-      this.player1.moves = this.getPlayerMoves(this.player1.pieces);
-      this.player2.moves = this.getPlayerMoves(this.player2.pieces);
-      this.player1King = this.getPlayerKing(this.player1.pieces, 1);
-      this.player2King = this.getPlayerKing(this.player2.pieces, 2);
-      // I need to set this.pieces to the new pieces without the moves for the king
-      this.pieces = this.removeMovesThatLeavePlayerInCheck(this.pieces);
+      this.pieces = this.handleCheck(this.pieces);
     },
     init: function(config) {
       this.player1.color = config.player1.color;
