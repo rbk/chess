@@ -94,9 +94,9 @@ function Chess()
             all.push({
               name : name,
               player : Number(team_number),
-              direction : direction,
+             // direction : direction,
               coor : {x: x, y: y},
-              advanced : false,
+              //advanced : false,
               moves : [],
               key: p,
               value : value,
@@ -166,19 +166,8 @@ function Chess()
         // return moves
 
         // if move leaves player in check, remove the move from "moves" array
-
-
-
       }
       return pieces;
-
-
-      // for each opponent moves if any match my kings moves, remove it from my kings moves
-      // this.player1King.moves.map((move1, index) => {
-      //   this.player2.moves.filter((move2) => {
-      //
-      //   })
-      // });
     },
     /**
      * Calculate danger level for each piece
@@ -189,9 +178,12 @@ function Chess()
       pieces.map((piece, index) => {
         let x = piece.coor.x;
         let y = piece.coor.y;
+        console.log(piece)
         pieces.map((piece2, index2) => {
+
           if (piece2.moves) {
             piece2.moves.map((move, index) => {
+              console.log(piece2)
               if (move.coor.x == x && move.coor.y == y && move.capture) {
                 // If the a king is in danger, put player in check
                 if (piece.name == "king") {

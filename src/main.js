@@ -44,14 +44,15 @@ game.updateGame([
 // ui.displayBoard(game);
 
 // game.setTurn("player2");
-ui.displayBoard(game);
 
+ui.displayBoard(game);
 game.move({x:7,y:6}, {x:3, y:6});
-// TODO/BUG - Game not visually updating anymore
 console.log("AFTER MOVE FUNC")
 console.log(game.board)
 game.updateGame(game.board)
 ui.displayBoard(game);
+
+
 // console.log(`Player 1 check status: ${game.player1.inCheck}`)
 // console.log(`Player 2 check status: ${game.player2.inCheck}`)
 // console.log(game.player2)
