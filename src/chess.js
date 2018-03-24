@@ -133,9 +133,41 @@ function Chess()
     },
     // If player in check, remove moves that leave player in check
     handleCheck: function(pieces) {
-      var sim = this.simulateMove("R2", {x:7,y:6}, {x:3, y:6});
-      console.log("AFTER SIM MOVE FUNC")
-      console.log(sim)
+      // var sim = this.simulateMove("R2", {x:7,y:6}, {x:3, y:6});
+      // console.log("AFTER SIM MOVE FUNC")
+      // console.log(sim)
+      // remove moves that will cause or keep player in check
+      for (var i=0; i < pieces.length; i++) {
+        if (pieces[i].name == "king" && pieces[i].inDanger) {
+          for (var c=0; c < pieces.length; c++) {
+            if (pieces[c].player == pieces[i].player) {
+              var player = pieces[i].player;
+              var from = pieces[i].coor;
+              var to = pieces[c].coor;
+              var sim2 = this.simulateMove(pieces[c].key, from, to);
+              console.log(sim2)
+              // for each pices on sim board
+              for (var k=0; k<sim2.length; k++) {
+                if (sim2[k].player == player) {
+                  if (sim2[k].name == "king" && sim2[k].inDanger) {
+                    console.log(pieces[c])
+                    // remove FROM  pieves[c].moves WHERE move == TO
+                    pieces[c].moves.filter((item) => {
+                      if (item.x != to.x && item.y != to.y) {
+                        return true;
+                      }
+                    })
+                  }
+                }
+              }
+              // get king inDanger value
+              // if king inDaner = true
+              // remove move from pieces
+            }
+          }
+        }
+      }
+      // return filtered pieces. all moves that keep player in check removed
       return pieces;
     },
     /**
@@ -154,6 +186,7 @@ function Chess()
             var move = p2.moves[k];
             if (move.coor.x == x && move.coor.y == y && move.capture) {
               pieces[i].inDanger = true;
+
             }
           }
         }

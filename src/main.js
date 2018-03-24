@@ -38,7 +38,7 @@ game.updateGame([
 
 //game.setBoard(game.startingBoard)
 
-// console.log('pieces', game.pieces)
+ console.log('pieces', game.pieces)
 // console.log('board', game.board)
 
 // ui.displayBoard(game);
@@ -46,10 +46,10 @@ game.updateGame([
 // game.setTurn("player2");
 
 ui.displayBoard(game);
-// game.move({x:7,y:6}, {x:3, y:6});
-// console.log("AFTER MOVE FUNC")
-// game.updateGame(game.board)
-// ui.displayBoard(game);
+game.move({x:7,y:6}, {x:3, y:6});
+console.log("AFTER MOVE FUNC")
+game.updateGame(game.board)
+ui.displayBoard(game);
 
 
 // console.log(`Player 1 check status: ${game.player1.inCheck}`)
