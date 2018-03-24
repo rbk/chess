@@ -131,9 +131,20 @@ function Chess()
       });
       return result;
     },
+    // remove moves that leave player in check
     removeMoves: function(pieces, player) {
-      console.log('remove moves')
-      console.log(pieces)
+
+      var rook = pieces[1];
+      var rookMoves = pieces[1].moves;
+      for (var i=0; i < rookMoves.length; i++) {
+        var sim = this.simulateMove(rook.key, rook.coor, rookMoves[i].coor)
+        if (sim[`player${player}King`].inDanger) {
+          pieces[1].moves.splice(i, 1)
+        }
+        console.log(sim)
+      }
+      return pieces;
+
       pieces.map((p, index1) => {
         if (p.player == player) {
           var from = p.coor;
@@ -141,10 +152,12 @@ function Chess()
           p.moves.map((move, index2) => {
             var to = move.coor;
             var sim = this.simulateMove(key, from, to)
+            // console.log(sim.board)
             // console.log(key, from, to)
             // console.log(sim.player2King)
             if (sim[`player${player}King`].inDanger) {
-              console.log(pieces[index1].moves[index2])
+              // console.log(pieces[index1].moves[index2])
+              // console.log(index2)
               pieces[index1].moves.splice(index2, 1)
             }
           });
@@ -157,6 +170,7 @@ function Chess()
     },
     // If player in check, remove moves that leave player in check
     handleCheck: function(pieces) {
+
       this.player1.pieces = this.getPlayerPieces(pieces, 1);
       this.player2.pieces = this.getPlayerPieces(pieces, 2);
       this.player1.moves = this.getPlayerMoves(this.player1.pieces);
@@ -530,6 +544,7 @@ function Chess()
     },
     simulateMove: function(key, from, to) {
       var gameClone = {
+        "board" : "",
         "pieces": "",
         "player1": {"pieces": "", "moves": ""},
         "player2": {"pieces": "", "moves" : ""},
@@ -540,9 +555,13 @@ function Chess()
       var simPieces = [];
       this.board[to.y][to.x] = key;
       this.board[from.y][from.x] = "00";
+
+      gameClone.board = this.board;
+
       simPieces = this.buildPieces(this.board)
       simPieces = this.calculateMoves(simPieces);
       simPieces = this.calculateDanger(simPieces);
+
       gameClone.player1.pieces = this.getPlayerPieces(simPieces, 1);
       gameClone.player2.pieces = this.getPlayerPieces(simPieces, 2);
       gameClone.player1.moves = this.getPlayerMoves(gameClone.player1.pieces);
