@@ -1,6 +1,8 @@
 function ChessUi()
 {
 
+  var turn = 0;
+
   // https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode#Unicode_codepoints_and_HTML
   const armyMap = [
     { key: "00", display: "" },
@@ -55,19 +57,31 @@ function ChessUi()
   function buildTable(game) {
     let pieces = game.pieces;
     let board = game.board;
-    // console.log(board)
-    let html = "<table>";
+    let html = `
+      <div class="status">
+        Turn: Player ${game.turn.num} (${game.turn.color}) | In Check: ${game.turn.inCheck}
+      </div>
+    `;
+    // console.log(game.turn)
+    html += "<table>";
     board.map((row,rowIndex) => {
       html += "<tr>";
       row.map((col, colIndex) => {
         let pieceDisplay = getPieceDisplay(col);
         let pieceData = getPieceObj(rowIndex, colIndex, pieces)
         let pieceDataString = JSON.stringify(pieceData);
+        var extraClass = "";
+        if ("name" in pieceData) {
+          extraClass = "chess-piece";
+        }
         html += `<td
           x='${colIndex}'
           y='${rowIndex}'
           data='${pieceDataString}'
-          class='chess-piece board-tile ${pieceDisplay.color}'>${pieceDisplay.icon}</td>`;
+          class='${extraClass} board-tile ${pieceDisplay.color}'>
+            ${pieceDisplay.icon}
+            <span class="debug-piece-coor">[${colIndex}, ${rowIndex}]</span>
+          </td>`;
       });
       html += "</tr>";
     });
@@ -75,18 +89,18 @@ function ChessUi()
     return html;
   }
 
+  // Show available moves
   function setOnClickEvent() {
-    let pieces = document.querySelectorAll('.chess-piece');
-    let tiles = document.querySelectorAll('.board-tile');
-    pieces.forEach(function(piece) {
+    let tiles = document.querySelectorAll('.chess-piece');
+    tiles.forEach(function(piece) {
       piece.addEventListener('click', function() {
-        pieces.forEach(function(p){
+        tiles.forEach(function(p){
           p.classList.remove('selected')
           p.classList.remove('possible')
         })
         let obj = JSON.parse(this.getAttribute('data'));
         this.classList.toggle("selected")
-        // console.log(obj.moves)
+        // console.log(obj)
         if (obj.moves) {
           tiles.forEach(function(tile) {
             let x = tile.getAttribute('x')
@@ -102,10 +116,65 @@ function ChessUi()
     })
   }
 
+  // Store selected,
+  // if stored, check move
+  function setClickTwo(){
+    document.body.addEventListener('click', function(e){
+      var el = e.target;
+      var next_move_from = document.getElementById('next-move-from');
+      var next_move_to = document.getElementById('next-move-to');
+      var x, y, data, coors;
+
+      if (el.className.match('possible')) {
+        let x = el.getAttribute('x')
+        let y = el.getAttribute('y')
+        var next_move_to = document.getElementById('next-move-to');
+        next_move_to.value = JSON.stringify({x: x, y: y});
+        let tiles = document.querySelectorAll('.board-tile');
+        tiles.forEach(function(p){
+          p.classList.remove('selected')
+          p.classList.remove('possible')
+        });
+        return;
+      }
+
+      // If piece
+      if (
+        next_move_from.value == "" && 
+        !el.className.match('possible') &&
+        el.className.match('chess-piece')
+      ) {
+        data = JSON.parse(e.target.attributes.data.nodeValue)
+        x = e.target.attributes.x.nodeValue;
+        y = e.target.attributes.y.nodeValue;
+        coors = {"x":x, "y":y}
+        next_move_from.value = JSON.stringify(coors);
+        let tiles = document.querySelectorAll('.board-tile');
+        tiles.forEach(function(p){
+          p.classList.remove('selected')
+          p.classList.remove('possible')
+        });
+        el.classList.toggle("selected")
+        let obj = JSON.parse(el.getAttribute('data'));
+        if (obj.moves) {
+          tiles.forEach(function(tile) {
+            let x = tile.getAttribute('x')
+            let y = tile.getAttribute('y')
+            obj.moves.forEach(function(move){
+              if (x == move.coor.x && y == move.coor.y) {
+                tile.classList.add('possible')
+              }
+            })
+          })
+        }
+      }
+    });
+  }
+
   function appendTable(html) {
     let chessElement = document.getElementById('chess');
-    chessElement.innerHTML = chessElement.innerHTML + html;
-    // chessElement.innerHTML = html;
+    // chessElement.innerHTML = chessElement.innerHTML + html;
+    chessElement.innerHTML = html;
   }
 
   return {
@@ -115,7 +184,8 @@ function ChessUi()
       this.setEvents();
     },
     setEvents: function() {
-      setOnClickEvent();
+      // setOnClickEvent();
+      setClickTwo();
     }
   }
 

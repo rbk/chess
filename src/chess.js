@@ -5,6 +5,7 @@ function Chess()
     board: [],
     pieces: [],
     player1: {
+      num: 1,
       color: null,
       pieces: [],
       moves: [],
@@ -13,9 +14,9 @@ function Chess()
       checkmate: false,
       stalemated: false,
       rookMoved: false,
-      castleMoved: false,
     },
     player2: {
+      num: 2,
       color: null,
       pieces: [],
       moves: [],
@@ -24,7 +25,6 @@ function Chess()
       checkmate: false,
       stalemated: false,
       rookMoved: false,
-      castleMoved: false,
     },
     setTurn: function(player) {
       this.turn = this[player];
@@ -133,39 +133,20 @@ function Chess()
     },
     // remove moves that leave player in check
     removeMoves: function(pieces, player) {
-
-      var rook = pieces[1];
-      var rookMoves = pieces[1].moves;
-      for (var i=0; i < rookMoves.length; i++) {
-        var sim = this.simulateMove(rook.key, rook.coor, rookMoves[i].coor)
-        if (sim[`player${player}King`].inDanger) {
-          pieces[1].moves.splice(i, 1)
+      // console.log(pieces)
+      for (i in pieces) {
+        var piece = pieces[i];
+        var newMoves = [];
+        var player = piece.player
+        for (m in piece.moves) {
+          var move = piece.moves[m];
+          var sim = this.simulateMove(piece.key, piece.coor, move.coor)
+          if (!sim[`player${player}King`].inDanger) {
+            newMoves.push(move)
+          }
         }
-        console.log(sim)
+        piece.moves = newMoves;
       }
-      return pieces;
-
-      pieces.map((p, index1) => {
-        if (p.player == player) {
-          var from = p.coor;
-          var key = p.key;
-          p.moves.map((move, index2) => {
-            var to = move.coor;
-            var sim = this.simulateMove(key, from, to)
-            // console.log(sim.board)
-            // console.log(key, from, to)
-            // console.log(sim.player2King)
-            if (sim[`player${player}King`].inDanger) {
-              // console.log(pieces[index1].moves[index2])
-              // console.log(index2)
-              pieces[index1].moves.splice(index2, 1)
-            }
-          });
-          // simulate all moves
-          // if king still in danger
-          // remove move from pices array
-        }
-      })
       return pieces;
     },
     // If player in check, remove moves that leave player in check
@@ -177,11 +158,12 @@ function Chess()
       this.player2.moves = this.getPlayerMoves(this.player2.pieces);
       this.player1King = this.getPlayerKing(this.player1.pieces, 1);
       this.player2King = this.getPlayerKing(this.player2.pieces, 2);
-
       if (this.player1King.inDanger) {
+        this.player1.inCheck = true;
         pieces = this.removeMoves(pieces, 1)
       }
       if (this.player2King.inDanger) {
+        this.player2.inCheck = true;
         pieces = this.removeMoves(pieces, 2)
       }
       return pieces;
