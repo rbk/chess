@@ -2,6 +2,15 @@
 
 The game of chess.. actually nothing yet.
 
+
+## Todo
+
+1. save state
+2. game manager (turn and messages)
+3. ai algorithm
+
+
+
 ## AI notes
 
 - DANGER move puts piece in danger (-2)

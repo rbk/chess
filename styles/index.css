@@ -1,5 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 html {
-  height: 100%;
   background-image: linear-gradient(to bottom right, #00133e, #5a0600);
 }
 body {
@@ -8,9 +17,8 @@ body {
 }
 
 table {
-  margin: 0 auto 3rem;
+  margin: 0 auto;
   border-collapse: collapse;
-  box-shadow: 0px 0px 120px 0px #000;
 }
 
 td {
@@ -18,8 +26,8 @@ td {
 }
 
 td, .board-tile {
-  height: 60px;
-  width: 60px;
+  height: 62px;
+  width: 62px;
   text-align: center;
   vertical-align: center;
   font-size: 36px;
@@ -42,6 +50,7 @@ tr:nth-child(even) td:nth-child(odd) {
 #chess {
   max-width: 494px;
   margin: 0 auto;
+  box-shadow: 0px 0px 120px 0px #000;
 }
 
 .color-black {
@@ -65,9 +74,8 @@ tr:nth-child(even) td:nth-child(odd) {
 
 .status {
   font-family: monospace;
-  background-color: #007971;
+  background-color: #2670e2;
   padding: 4px 6px;
-  border: 1px solid #006b62;
 }
 
 .debug-piece-coor {

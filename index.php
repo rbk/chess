@@ -74,7 +74,6 @@
     </div>
 
     <div id="chess"></div>
-    <!-- <script src="src/Queen.js?t=<?php echo $rand; ?>"></script> -->
     <script src="src/chess.js?t=<?php echo $rand; ?>"></script>
     <script src="src/ai.js?t=<?php echo $rand; ?>"></script>
     <script src="src/ui.js?t=<?php echo $rand; ?>"></script>

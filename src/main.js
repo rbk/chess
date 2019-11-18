@@ -31,11 +31,11 @@ var next_move_from = document.getElementById('next-move-from');
 var next_move_to = document.getElementById('next-move-to');
 
 
-game.updateGame(game.startingBoard)
+// game.updateGame(game.startingBoard)
 player.value = 1
 message.value = "Player one needs to move."
 game.setTurn("player1");
-game.move({"x":"4","y":"4"}, {"x":"3","y":"3"})
+game.move({"x":"4","y":"6"}, {"x":"4","y":"5"})
 ui.displayBoard(game);
 
 gameManagement.reset = function(){
@@ -53,7 +53,7 @@ gameManagement.init = function(){
 
         The game.move function should be the messager.
         Send game codes back to manager.
-        Example:
+        Examples:
           - Player 1 moved rook from [0,0] to [0,1].
           - Player 1 captures player 2 queen.
           - Cannot move. Player 2 is in check.
@@ -106,12 +106,9 @@ gameManagement.init();
 // game.updateGame(game.board)
 // ui.displayBoard(game);
 
-
 // console.log(`Player 1 check status: ${game.player1.inCheck}`)
 // console.log(`Player 2 check status: ${game.player2.inCheck}`)
 // console.log(game.player2)
-
-
 
 // log which move moves are the best
 // console.log(ai.player);

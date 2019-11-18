@@ -465,7 +465,6 @@ function Chess()
       }
     },
     log_moves: function(y, x) {
-      console.clear();
       let boardClone = JSON.stringify(this.board);
       boardClone = JSON.parse(boardClone)
       this.pieces.map((piece) => {
@@ -482,9 +481,6 @@ function Chess()
             }
           })
         }
-      })
-      boardClone.map((row) => {
-        // console.log(row)
       })
     },
     remove_piece: function(y,x) {
@@ -572,7 +568,6 @@ function Chess()
     init: function(config) {
       this.player1.color = config.player1.color;
       this.player2.color = config.player2.color;
-      // this.updateGame(this.startingBoard)
     }
   }
 }

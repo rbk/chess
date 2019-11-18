@@ -116,58 +116,78 @@ function ChessUi()
     })
   }
 
+  function resetTiles() {
+    let tiles = document.querySelectorAll('.board-tile');
+    tiles.forEach(function(p){
+      p.classList.remove('selected')
+      p.classList.remove('possible')
+    });
+  }
+
   // Store selected,
   // if stored, check move
   function setClickTwo(){
-    document.body.addEventListener('click', function(e){
-      var el = e.target;
-      var next_move_from = document.getElementById('next-move-from');
-      var next_move_to = document.getElementById('next-move-to');
-      var x, y, data, coors;
 
-      if (el.className.match('possible')) {
-        let x = el.getAttribute('x')
-        let y = el.getAttribute('y')
-        var next_move_to = document.getElementById('next-move-to');
-        next_move_to.value = JSON.stringify({x: x, y: y});
-        let tiles = document.querySelectorAll('.board-tile');
-        tiles.forEach(function(p){
-          p.classList.remove('selected')
-          p.classList.remove('possible')
-        });
-        return;
-      }
+    var next_move_from = document.getElementById('next-move-from');
+    var next_move_to = document.getElementById('next-move-to');
+    var x, y, data, coors;
 
-      // If piece
-      if (
-        next_move_from.value == "" && 
-        !el.className.match('possible') &&
-        el.className.match('chess-piece')
-      ) {
-        data = JSON.parse(e.target.attributes.data.nodeValue)
-        x = e.target.attributes.x.nodeValue;
-        y = e.target.attributes.y.nodeValue;
-        coors = {"x":x, "y":y}
-        next_move_from.value = JSON.stringify(coors);
-        let tiles = document.querySelectorAll('.board-tile');
-        tiles.forEach(function(p){
-          p.classList.remove('selected')
-          p.classList.remove('possible')
-        });
-        el.classList.toggle("selected")
-        let obj = JSON.parse(el.getAttribute('data'));
-        if (obj.moves) {
-          tiles.forEach(function(tile) {
-            let x = tile.getAttribute('x')
-            let y = tile.getAttribute('y')
-            obj.moves.forEach(function(move){
-              if (x == move.coor.x && y == move.coor.y) {
-                tile.classList.add('possible')
-              }
-            })
-          })
+    let tiles = document.querySelectorAll('.board-tile');
+    tiles.forEach(function(tile){
+      tile.addEventListener('click', function(e){
+        var el = tile;
+        // Selected piece or current piece
+        // Reset highlights and from move
+        if (el.className.match('chess-piece') && el.className.match('selected') && !el.className.match('possible')) {
+          resetTiles()
+          next_move_from.value = ""
+          return;
         }
-      }
+
+        if (el.className.match('possible')) {
+          let x = el.getAttribute('x')
+          let y = el.getAttribute('y')
+          var next_move_to = document.getElementById('next-move-to');
+          next_move_to.value = JSON.stringify({x: x, y: y});
+          let tiles = document.querySelectorAll('.board-tile');
+          tiles.forEach(function(p){
+            p.classList.remove('selected')
+            p.classList.remove('possible')
+          });
+          return;
+        }
+
+        // If piece
+        if (
+          next_move_from.value == "" &&
+          !el.className.match('possible') &&
+          el.className.match('chess-piece')
+        ) {
+          data = JSON.parse(e.target.attributes.data.nodeValue)
+          x = e.target.attributes.x.nodeValue;
+          y = e.target.attributes.y.nodeValue;
+          coors = {"x":x, "y":y}
+          next_move_from.value = JSON.stringify(coors);
+          let tiles = document.querySelectorAll('.board-tile');
+          tiles.forEach(function(p){
+            p.classList.remove('selected')
+            p.classList.remove('possible')
+          });
+          el.classList.toggle("selected")
+          let obj = JSON.parse(el.getAttribute('data'));
+          if (obj.moves) {
+            tiles.forEach(function(tile) {
+              let x = tile.getAttribute('x')
+              let y = tile.getAttribute('y')
+              obj.moves.forEach(function(move){
+                if (x == move.coor.x && y == move.coor.y) {
+                  tile.classList.add('possible')
+                }
+              })
+            })
+          }
+        }
+      });
     });
   }
 
